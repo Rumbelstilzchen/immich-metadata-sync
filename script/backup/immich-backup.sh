@@ -312,7 +312,6 @@ backup_library() {
     log "   🔄 Synchronisiere Dateien (kann einige Zeit dauern)..."
     
     if ! rsync -ah --info=progress2 --delete --checksum \
-        #--exclude=".*" \
         --exclude="Thumbs.db" \
         --exclude=".DS_Store" \
         "$IMMICH_LIBRARY_DIR/" \
