@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  immich-metadata-sync-web:
+    # Build from the repo root so the Dockerfile can access both /script and /web
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    container_name: immich-metadata-sync-web
+    ports:
+      - "5000:5000"
+    volumes:
+      - /path/to/your/immich-library:/library   # Mount your photo library
+      - ./logs:/app/logs                         # Optional: persist logs
+    environment:
+      - IMMICH_INSTANCE_URL=http://your-immich-instance:2283
+      - IMMICH_API_KEY=your-api-key-here
+      - IMMICH_PHOTO_DIR=/library
+      - TZ=Europe/Berlin
+      # Web server settings
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=5000
+      # IMPORTANT: set a strong random value in production
+      - FLASK_SECRET_KEY=change-me-in-production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
