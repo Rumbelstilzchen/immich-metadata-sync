@@ -40,7 +40,7 @@ It extracts metadata from the [Immich API](https://api.docs.immich.app) and uses
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-  - [Web Interface](#-web-interface-new-in-v15)
+  - [Web Interface](#-web-interface-v20)
   - [Command Line](#command-line-options)
     - [People](#people)
     - [GPS](#gps)
@@ -138,12 +138,17 @@ Set these environment variables (or provide a config file via `--config`). Suppo
 
 ## Usage
 
-### 🌐 Web Interface (New in v1.5!)
+### 🌐 Web Interface (v2.0)
 
-The easiest way to manage sync operations is through the web interface:
+Starting with v2.0, the web interface lives in its own dedicated [`/web`](web/) directory
+alongside a separate Dockerfile, Docker Compose file, and full documentation.
 
 ```bash
-python3 web_interface.py
+# Install web dependencies
+pip install -r web/requirements.txt
+
+# Start the web server (from the repo root)
+python3 web/web_interface.py
 ```
 
 Then open http://localhost:5000 in your browser. The web interface provides:
@@ -163,6 +168,10 @@ Configure the web server with environment variables:
 - Defaults to localhost (127.0.0.1) for security
 - For production use, consider running behind a reverse proxy with authentication
 - Sync operations run synchronously - best suited for smaller libraries or testing
+
+See **[web/README.md](web/README.md)** for the full web interface documentation,
+including Docker deployment and a CLI vs. Web comparison.  
+German documentation: [web/doc/de/README.md](web/doc/de/README.md)
 
 ### Quick Start
 
@@ -594,6 +603,8 @@ See `script/backup/BACKUP_SETUP.md` for detailed setup instructions.
 
 - **Docker environment setup:** [runbook.md](runbook.md)  
 - **Script reference:** [doc/immich-metadata-sync.md](doc/immich-metadata-sync.md)  
+- **Web Interface documentation:** [web/README.md](web/README.md)  
+  - German: [web/doc/de/README.md](web/doc/de/README.md)
 - **German documentation:** see [doc/de](doc/de/)
   - [Technical Documentation](doc/de/immich-metadata-sync.md) (German)
   - [Setup Guide](doc/de/Einrichtung.md) (German)
@@ -657,6 +668,16 @@ script/
 ├── utils.py              # Utility functions and constants
 ├── api.py                # API-related functions and RateLimiter
 └── exif.py               # EXIF/XMP metadata handling
+
+web/                      # Optional web interface (v2.0+)
+├── web_interface.py      # Flask application
+├── templates/
+│   └── index.html        # Browser UI
+├── requirements.txt      # Web-specific dependencies
+├── Dockerfile            # Build from repo root: docker build -f web/Dockerfile .
+├── docker-compose.yml    # Ready-to-use Compose stack
+├── README.md             # Web interface documentation (English)
+└── doc/de/README.md      # Web interface documentation (German)
 ```
 
 ### Running Tests

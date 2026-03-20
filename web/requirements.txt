@@ -1,0 +1,4 @@
+# Web interface dependencies
+flask>=3.0.0
+requests
+tqdm
