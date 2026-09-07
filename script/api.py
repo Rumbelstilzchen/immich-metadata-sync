@@ -207,7 +207,13 @@ def fetch_asset_details_batch(
     for asset_id in asset_ids:
         if asset_id in details_by_id:
             continue
-        detail = api_call("GET", f"/assets/{asset_id}", headers, base_url, log_file)
-        if detail:
+        if detail:=api_call("GET", f"/assets/{asset_id}", headers, base_url, log_file):
+            try:
+                if detail['people'] and (people:= api_call("GET", f"/faces?id={asset_id}", headers, base_url, log_file)):
+                    people = {person['person']['id']: [person] for person in people if person.get('person', None) is not None}
+                    for person in detail['people']:
+                        person['faces'] = people.get(person['id'], [])
+            except Exception as e:
+                log(f"Error fetching faces for asset {asset_id}: {e}", log_file, LogLevel.WARNING)
             details_by_id[asset_id] = detail
     return details_by_id
