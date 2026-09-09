@@ -27,6 +27,7 @@ class ExifToolHelper:
     """ExifTool wrapper using stay-open mode for better performance."""
     def __init__(self):
         self.process = None
+        self.filecounter = 0
     
     def start(self):
         """Start ExifTool in stay-open mode."""
@@ -57,6 +58,12 @@ class ExifToolHelper:
             if not line or line.strip() == "{ready}":
                 break
             output.append(line)
+
+        self.filecounter += 1
+
+        if self.filecounter > 10
+            self.filecounter = 0
+            self.close()
         
         # Optional: Hier könnte man stderr separat auslesen, 
         # aber meistens reicht stdout für die Fehlerdiagnose bei ExifTool
@@ -68,6 +75,7 @@ class ExifToolHelper:
             self.process.stdin.write("-stay_open\nFalse\n")
             self.process.stdin.flush()
             self.process.wait()
+        self.process = None
 
 # overwride sidcar
 def execute_with_sidecar_and_msphoto(args: list, full_path: str, exif_tool_helper: ExifToolHelper, log_file: str) -> tuple:
