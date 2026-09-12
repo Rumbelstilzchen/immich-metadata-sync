@@ -38,11 +38,9 @@ class ExifToolHelper:
             stderr=subprocess.PIPE,
             text=True
         )
-        log("[process] Process started", log_file, LogLevel.INFO)
     
     def execute(self, args: List[str]) -> tuple:
         """Execute ExifTool command and return (stdout, stderr)."""
-        log("[process] Process: process file", log_file, LogLevel.INFO)
         if not self.process:
             self.start()
             
@@ -66,7 +64,7 @@ class ExifToolHelper:
         if self.filecounter > 10:
             self.filecounter = 0
             self.close()
-        log("[process] Process: process file - finished", log_file, LogLevel.INFO)
+
         # Optional: Hier könnte man stderr separat auslesen, 
         # aber meistens reicht stdout für die Fehlerdiagnose bei ExifTool
         return "".join(output), ""
@@ -77,7 +75,6 @@ class ExifToolHelper:
             self.process.stdin.write("-stay_open\nFalse\n")
             self.process.stdin.flush()
             self.process.wait()
-            log("[process] Process closed", log_file, LogLevel.INFO)
         self.process = None
 
 # overwride sidcar
@@ -629,15 +626,15 @@ def build_exif_args(
         is_favorite = asset.get("isFavorite", False)
 
         # === TEMPORARY DEBUG - Remove after testing ===
-        #orig_path = asset.get("originalPath", "unknown")
-        #exif_rating = exif.get("rating")
-        #asset_rating = asset.get("rating")
-        #log(f"[RATING-DEBUG] File: {orig_path}", log_file, LogLevel.INFO)
-        #log(f"[RATING-DEBUG]   exif.rating={exif_rating}, asset.rating={asset_rating}, isFavorite={is_favorite}", log_file, LogLevel.INFO)
-        #if star_rating is None:
-            #log(f"[RATING-DEBUG]   → star_rating=None, will calculate below", log_file, LogLevel.INFO)
-        #else:
-            #log(f"[RATING-DEBUG]   → star_rating={star_rating}", log_file, LogLevel.INFO)
+        orig_path = asset.get("originalPath", "unknown")
+        exif_rating = exif.get("rating")
+        asset_rating = asset.get("rating")
+        log(f"[RATING-DEBUG] File: {orig_path}", log_file, LogLevel.INFO)
+        log(f"[RATING-DEBUG]   exif.rating={exif_rating}, asset.rating={asset_rating}, isFavorite={is_favorite}", log_file, LogLevel.INFO)
+        if star_rating is None:
+            log(f"[RATING-DEBUG]   → star_rating=None, will calculate below", log_file, LogLevel.INFO)
+        else:
+            log(f"[RATING-DEBUG]   → star_rating={star_rating}", log_file, LogLevel.INFO)
         # === END DEBUG ===
 
 
