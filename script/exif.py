@@ -557,7 +557,7 @@ def build_exif_args(
             people_sorted = sorted(people)
             val = ",".join(people_sorted)
             args.extend([
-                f"-XMP:Subject={val}", 
+                # f"-XMP:Subject={val}",  # persons as subject is quite strange and not alike digikam
                 f"-IPTC:Keywords={val}",
                 f"-XMP-iptcExt:PersonInImage={val}"  # ← NEW: IPTC Extension standard
             ])
