@@ -739,6 +739,22 @@ def build_exif_args(
             # The virtual tag: Used by extract_desired_values, but filtered out in execute()
             regions = {"AppliedToDimensions": dims, "RegionList": region_list}
             args.append(f"-RegionInfo={json.dumps(regions)}")
+
+            regions = [{
+                "Name": region["Name"],
+                "Type": "Face",
+                "PersonDisplayName": region["Name"],
+                "Area": {
+                    "X": region["Area"]["X"],
+                    "Y": region["Area"]["Y"],
+                    "W": region["Area"]["W"],
+                    "H": region["Area"]["H"],
+                    "Unit": "normalized"
+                }
+            } for region in region_list]
+
+            args.append(f'-XMP-MPRI:Regions={json.dumps(regions)}')
+            
             changes.append("FaceCoordinates")
 
     return args, changes
