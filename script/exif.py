@@ -38,9 +38,11 @@ class ExifToolHelper:
             stderr=subprocess.PIPE,
             text=True
         )
+        log("[process] Process started", log_file, LogLevel.INFO)
     
     def execute(self, args: List[str]) -> tuple:
         """Execute ExifTool command and return (stdout, stderr)."""
+        log("[process] Process: process file", log_file, LogLevel.INFO)
         if not self.process:
             self.start()
             
@@ -61,10 +63,10 @@ class ExifToolHelper:
 
         self.filecounter += 1
 
-        if self.filecounter > 10
+        if self.filecounter > 10:
             self.filecounter = 0
             self.close()
-        
+        log("[process] Process: process file - finished", log_file, LogLevel.INFO)
         # Optional: Hier könnte man stderr separat auslesen, 
         # aber meistens reicht stdout für die Fehlerdiagnose bei ExifTool
         return "".join(output), ""
@@ -75,6 +77,7 @@ class ExifToolHelper:
             self.process.stdin.write("-stay_open\nFalse\n")
             self.process.stdin.flush()
             self.process.wait()
+            log("[process] Process closed", log_file, LogLevel.INFO)
         self.process = None
 
 # overwride sidcar
