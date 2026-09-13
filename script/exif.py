@@ -740,21 +740,16 @@ def build_exif_args(
             regions = {"AppliedToDimensions": dims, "RegionList": region_list}
             args.append(f"-RegionInfo={json.dumps(regions)}")
 
-            regions = [{
-                "Name": region["Name"],
-                "Type": "Face",
-                "PersonDisplayName": region["Name"],
-                "Area": {
-                    "X": region["Area"]["X"],
-                    "Y": region["Area"]["Y"],
-                    "W": region["Area"]["W"],
-                    "H": region["Area"]["H"],
-                    "Unit": "normalized"
-                }
-            } for region in region_list]
+            for i, region in enumerate(region_list, start=1):
+                base = f"XMP-MPRI:RegionsRegionList[{i}]"
+                args.append(f'-{base}/Name={region["Name"]}')
+                args.append(f'-{base}/Type=Face')
+                args.append(f'-{base}/Area/stArea:x={region["Area"]["X"]}')
+                args.append(f'-{base}/Area/stArea:y={region["Area"]["Y"]}')
+                args.append(f'-{base}/Area/stArea:w={region["Area"]["W"]}')
+                args.append(f'-{base}/Area/stArea:h={region["Area"]["H"]}')
+                #args.append(f'-{base}/Area/stArea:unit=normalized')
 
-            args.append(f'-XMP-MPRI:Regions={json.dumps(regions)}')
-            
             changes.append("FaceCoordinates")
 
     return args, changes
