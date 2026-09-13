@@ -740,7 +740,7 @@ def build_exif_args(
             regions = {"AppliedToDimensions": dims, "RegionList": region_list}
             args.append(f"-RegionInfo={json.dumps(regions)}")
             
-            args.append(write_mpri_regions(region_list)
+            args.append(write_mpri_regions(region_list))
 
             changes.append("FaceCoordinates")
 
