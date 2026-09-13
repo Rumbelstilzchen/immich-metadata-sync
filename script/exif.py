@@ -739,17 +739,41 @@ def build_exif_args(
             # The virtual tag: Used by extract_desired_values, but filtered out in execute()
             regions = {"AppliedToDimensions": dims, "RegionList": region_list}
             args.append(f"-RegionInfo={json.dumps(regions)}")
-
-            for i, region in enumerate(region_list, start=1):
-                base = f"XMP-MPRI:RegionsRegionList[{i}]"
-                args.append(f'-{base}/Name={region["Name"]}')
-                args.append(f'-{base}/Type=Face')
-                args.append(f'-{base}/Area/stArea:x={region["Area"]["X"]}')
-                args.append(f'-{base}/Area/stArea:y={region["Area"]["Y"]}')
-                args.append(f'-{base}/Area/stArea:w={region["Area"]["W"]}')
-                args.append(f'-{base}/Area/stArea:h={region["Area"]["H"]}')
-                #args.append(f'-{base}/Area/stArea:unit=normalized')
+            
+            args.append(write_mpri_regions(region_list)
 
             changes.append("FaceCoordinates")
 
     return args, changes
+
+
+def write_mpri_regions(region_list):
+    """
+    Fügt XMP-MPRI Regions als vollständiges struct hinzu.
+    ExifTool akzeptiert MPRI nur als komplettes struct, nicht feldweise.
+    """
+
+    mpri_struct = {
+        "RegionList": []
+    }
+
+    for region in region_list:
+        mpri_struct["RegionList"].append({
+            "Name": region["Name"],
+            "Type": "Face",
+            "Area": {
+                "x": region["Area"]["X"],
+                "y": region["Area"]["Y"],
+                "w": region["Area"]["W"],
+                "h": region["Area"]["H"],
+                "unit": "normalized"
+            }
+        })
+
+    # ExifTool benötigt JSON als *struct*, nicht als String
+    json_struct = json.dumps(mpri_struct)
+
+    # ExifTool: struct append
+    ex_arg = f"-XMP-MPRI:Regions+={json_struct}"
+
+    return ex_arg
