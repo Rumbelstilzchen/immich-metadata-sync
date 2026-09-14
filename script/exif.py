@@ -756,7 +756,7 @@ def write_mwg_rs(region_list):
     for region in region_list:
         
         rectangle = f'{{X={region["X_C"]},Y={region["Y_C"]},W={region["W"]},H={region["H"]},Unit=normalized}}'
-        name = region["Name"]
+        name = region["Name"].replace(',','|,')
         
         regions.append(f'{{Name={name},Area={rectangle},Type=Face}}')
         
@@ -785,7 +785,7 @@ def write_mpri_regions(region_list):
             region["H"]
         ]
         rectangle = "|,".join(str(v) for v in area)
-        name = region["Name"]
+        name = region["Name"].replace(',','|,')
         
         regions.append(f'{{PersonDisplayName={name},Rectangle={rectangle}}}')
 
