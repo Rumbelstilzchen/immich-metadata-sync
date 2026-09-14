@@ -571,7 +571,7 @@ def build_exif_args(
         if people:
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
             people_sorted = sorted(people)
-            args.extend([f'-Keywords="Personen/{val}"' for val in people_sorted])
+            args.extend([f'-Keywords=Personen/{val}' for val in people_sorted])
             changes.append("People")
 
     # 2. LOCATION SYNC (GPS & altitude)
@@ -739,7 +739,7 @@ def build_exif_args(
             # Sortiere Tags alphabetisch für konsistente Reihenfolge
             tags_sorted = sorted(tags)
             args.extend([
-                f'-Keywords="{val}"' for val in tags_sorted
+                f'-Keywords={val}' for val in tags_sorted
             ])
             changes.append("Tags")
 
