@@ -561,8 +561,8 @@ def build_exif_args(
             val = ",".join(people_sorted)
             args.extend([
                 # f"-XMP:Subject={val}",  # persons as subject is quite strange and not alike digikam
-                f"-IPTC:Keywords={val}",
-                f"-XMP-iptcExt:PersonInImage={val}"  # ← NEW: IPTC Extension standard
+                f"-IPTC:Keywords=Person/{val}",
+                #f"-XMP-iptcExt:PersonInImage={val}"  # ← NEW: IPTC Extension standard
             ])
             changes.append("People")
 
@@ -753,7 +753,7 @@ def build_exif_args(
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
             tags_sorted = sorted(tags)
             args.extend([
-                f'-Keywords="{val}"' for vals in tags_sorted# ← NEW: IPTC Extension standard
+                f'-Keywords="{val}"' for val in tags_sorted
             ])
             changes.append("Tags")
 
