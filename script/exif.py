@@ -201,6 +201,8 @@ def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str
     
     if "people" in active_modes:
         tags_to_read.extend(["Subject", "Keywords", "PersonInImage"])  # ← FIX: Kein Namespace
+    if "tags" in active_modes:
+        tags_to_read.extend(["Keywords"])  # ← FIX: Kein Namespace
     if "gps" in active_modes:
         tags_to_read.extend(["GPSLatitude", "GPSLongitude", "GPSAltitude"])
     if "caption" in active_modes:
