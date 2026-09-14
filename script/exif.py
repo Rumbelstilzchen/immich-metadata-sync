@@ -558,12 +558,7 @@ def build_exif_args(
         if people:
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
             people_sorted = sorted(people)
-            val = ",".join(people_sorted)
-            args.extend([
-                # f"-XMP:Subject={val}",  # persons as subject is quite strange and not alike digikam
-                f"-IPTC:Keywords=Person/{val}",
-                #f"-XMP-iptcExt:PersonInImage={val}"  # ← NEW: IPTC Extension standard
-            ])
+            args.extend([f'-Keywords="Person/{val}"' for val in people_sorted])
             changes.append("People")
 
     # 2. LOCATION SYNC (GPS & altitude)
