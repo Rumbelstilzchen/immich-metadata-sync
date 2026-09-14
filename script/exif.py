@@ -137,7 +137,7 @@ def execute_with_sidecar_and_msphoto(args: list, full_path: str, exif_tool_helpe
     combined_out = (stdout or "") + (stderr or "")
     log(f"combined_out for {args+targets}:\nout\t{combined_out}\n",log_file,LogLevel.DEBUG)
 
-    if exif_tool_helper.delete_sidecar and os.path.exists(sidecar_path) and combined_out=='    2 image files updated' and sidecar_path.lower().endswith('.jpg.xmp'):
+    if exif_tool_helper.delete_sidecar and os.path.exists(sidecar_path) and combined_out.strip("\n\t ")=='2 image files updated' and sidecar_path.lower().endswith('.jpg.xmp'):
         try:
             os.remove(sidecar_path)
         except Exception:
