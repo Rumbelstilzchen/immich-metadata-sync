@@ -134,7 +134,8 @@ def execute_with_sidecar_and_msphoto(args: list, full_path: str, exif_tool_helpe
     # First write attempt (JPG [+ sidecar if present])
     stdout, stderr = exif_tool_helper.execute(args + targets)
     combined_out = (stdout or "") + (stderr or "")
-
+    log(f"combined_out for {args+targets}:\nout\t{combined_out}\n",log_file,LogLevel.DEBUG)
+    
     # If ExifTool complains about MicrosoftPhoto:Rating not writable, retry without that tag
     ms_tag = "MicrosoftPhoto:Rating"
     if any(keyword in combined_out for keyword in ["MicrosoftPhoto:Rating", "MicrosoftPhoto:Rating' doesn't exist", "not writable", "Sorry"]):
