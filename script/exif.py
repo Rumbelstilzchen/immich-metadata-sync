@@ -768,6 +768,6 @@ def write_mpri_regions(region_list):
     json_struct = json.dumps({"Regions": regions})
 
     # ExifTool: struct append
-    ex_arg = f"-RegionInfoMP={json_struct}"
+    ex_arg = f"-XMP-MP:RegionInfoMP={json_struct}"
 
     return ex_arg
