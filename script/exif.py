@@ -743,7 +743,7 @@ def write_mwg_rs(region_list):
         rectangle = f'{{X={region["X_C"]},Y={region["Y_C"]},W={region["W"]},H={region["H"]},Unit=normalized}}'
         name = region["Name"]
         
-        regions.append(f'{{Name={name},Area={rectangle}},Type=Face}')
+        regions.append(f'{{Name={name},Area={rectangle}},Type=Face}}')
         
     dimensions = f'{{W={region_list[0]["image_width"]},H={region_list[0]["image_height"]},Unit=pixel}}'
     
