@@ -421,10 +421,12 @@ def convert_bbox_to_mwg_rs(
     center_x = x1 + bbox_w / 2
     center_y = y1 + bbox_h / 2
     return {
-        "X": round(center_x / image_width, MWGRS_COORDINATE_PRECISION),
-        "Y": round(center_y / image_height, MWGRS_COORDINATE_PRECISION),
+        "X_C": round(center_x / image_width, MWGRS_COORDINATE_PRECISION),
+        "Y_C": round(center_y / image_height, MWGRS_COORDINATE_PRECISION),
         "W": round(bbox_w / image_width, MWGRS_COORDINATE_PRECISION),
         "H": round(bbox_h / image_height, MWGRS_COORDINATE_PRECISION),
+        "X1": round(x1 / image_width, MWGRS_COORDINATE_PRECISION),
+        "Y1": round(y1 / image_height, MWGRS_COORDINATE_PRECISION),
     }
 
 
@@ -720,8 +722,8 @@ def build_exif_args(
                 args.extend([
                     f"-XMP-mwg-rs:RegionName+={name}",
                     "-XMP-mwg-rs:RegionType+=Face",
-                    f"-XMP-mwg-rs:RegionAreaX+={area['X']}",
-                    f"-XMP-mwg-rs:RegionAreaY+={area['Y']}",
+                    f"-XMP-mwg-rs:RegionAreaX+={area['X_C']}",
+                    f"-XMP-mwg-rs:RegionAreaY+={area['Y_C']}",
                     f"-XMP-mwg-rs:RegionAreaW+={area['W']}",
                     f"-XMP-mwg-rs:RegionAreaH+={area['H']}",
                     "-XMP-mwg-rs:RegionAreaUnit+=normalized"
@@ -764,8 +766,8 @@ def write_mpri_regions(region_list):
     regions = []
     for region in region_list:
         area = [
-            region["Area"]["X"]-region["Area"]["W"]/2.0,
-            region["Area"]["Y"]-region["Area"]["H"]/2.0,
+            region["Area"]["X1"],
+            region["Area"]["Y1"],
             region["Area"]["W"],
             region["Area"]["H"]
         ]
