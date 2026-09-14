@@ -743,6 +743,16 @@ def build_exif_args(
             args.append(write_mpri_regions(region_list))
 
             changes.append("FaceCoordinates")
+    # . TAGs SYNC
+    if "tags" in active_modes:
+        tags = [t["value"] for t in details.get("tags", []) if t.get("value")]
+        if tags:
+            # Sortiere Namen alphabetisch für konsistente Reihenfolge
+            tags_sorted = sorted(tags)
+            args.extend([
+                f'-Keywords="{val}"' for vals in tags_sorted# ← NEW: IPTC Extension standard
+            ])
+            changes.append("Tags")
 
     return args, changes
 
