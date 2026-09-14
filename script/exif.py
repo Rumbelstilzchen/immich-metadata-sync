@@ -25,8 +25,9 @@ from utils import (
 # ==============================================================================
 class ExifToolHelper:
     """ExifTool wrapper using stay-open mode for better performance."""
-    def __init__(self):
+    def __init__(self, delete_sidecar=True):
         self.process = None
+        self.delete_sidecar = delete_sidecar
         self.filecounter = 0
     
     def start(self):
@@ -135,7 +136,15 @@ def execute_with_sidecar_and_msphoto(args: list, full_path: str, exif_tool_helpe
     stdout, stderr = exif_tool_helper.execute(args + targets)
     combined_out = (stdout or "") + (stderr or "")
     log(f"combined_out for {args+targets}:\nout\t{combined_out}\n",log_file,LogLevel.DEBUG)
-    
+
+    if exif_tool_helper.delete_sidecar os.path.exists(sidecar_path) and combined_out=='    2 image files updated' and sidecar_path.lower().endswith('.jpg.xmp'):
+        try:
+            os.path.exists(sidecar_path)
+        except Exception:
+            log(f"Could not delete sidecar: {sidecar_path}", log_file, LogLevel.WARNING)
+        else:
+            log(f"deleted sidecar: {sidecar_path}", log_file, LogLevel.DEBUG)
+        
     # If ExifTool complains about MicrosoftPhoto:Rating not writable, retry without that tag
     ms_tag = "MicrosoftPhoto:Rating"
     if any(keyword in combined_out for keyword in ["MicrosoftPhoto:Rating", "MicrosoftPhoto:Rating' doesn't exist", "not writable", "Sorry"]):
@@ -562,7 +571,7 @@ def build_exif_args(
         if people:
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
             people_sorted = sorted(people)
-            args.extend([f'-Keywords="Person/{val}"' for val in people_sorted])
+            args.extend([f'-Keywords="Personen/{val}"' for val in people_sorted])
             changes.append("People")
 
     # 2. LOCATION SYNC (GPS & altitude)
