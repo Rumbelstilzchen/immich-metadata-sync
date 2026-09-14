@@ -753,21 +753,23 @@ def write_mpri_regions(region_list):
     ExifTool akzeptiert MPRI nur als komplettes struct, nicht feldweise.
     """
 
-    mpri_struct = {
-        "Regions": []
-    }
     regions = []
     for region in region_list:
-        regions.append({
-            "PersonDisplayName": region["Name"],
-            "Rectangle": f'{region["Area"]["X"]-region["Area"]["W"]/2.0} {region["Area"]["Y"]-region["Area"]["H"]/2.0} {region["Area"]["W"]} {region["Area"]["H"]}'
-            }
-        )
+        area = [
+            region["Area"]["X"]-region["Area"]["W"]/2.0,
+            region["Area"]["Y"]-region["Area"]["H"]/2.0,
+            region["Area"]["W"],
+            region["Area"]["H"]
+        ]
+        rectangle = "|,".join(str(v) for v in area)
+        name = region["Name"]
+        
+        regions.append(f'{{PersonDisplayName={name},Rectangle={rectangle}}}')
 
-    # ExifTool benötigt JSON als *struct*, nicht als String
-    json_struct = json.dumps({"Regions": regions})
+    # ExifTool benötigt *struct*, nicht als String
+    string_struct = f'{{Regions=[{",".join(regions)}]}}'
 
     # ExifTool: struct append
-    ex_arg = f"-XMP-MP:RegionInfoMP={json_struct}"
+    ex_arg = f"-RegionInfoMP={string_struct}"
 
     return ex_arg
