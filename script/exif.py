@@ -218,7 +218,7 @@ def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str
         ])
     if "rating" in active_modes:
         tags_to_read.extend(["Rating", "XMP:Rating", "MicrosoftPhoto:Rating", "RatingPercent",
-                             "XMP:Label", "XMP:Favorite"]) # <-- Hinzugefügt: XMP:Favorite
+                             "XMP:Label"]) # <-- Hinzugefügt: XMP:Favorite
     
     if "albums" in active_modes:
         tags_to_read.extend(["Event", "HierarchicalSubject", "UserComment"])
@@ -644,16 +644,22 @@ def build_exif_args(
             star_rating = int(star_rating)
         elif is_favorite:
             star_rating = 5
+            
+        if star_rating is None:
+            args.extend([
+                #f"-XMP:Rating=",
+                #f"-MicrosoftPhoto:Rating=",
+                f"-Rating=",
+                f"-RatingPercent=",
+            ])
         else:
-            star_rating = 0
-
-        rating_percent = star_rating * 20
-        args.extend([
-            f"-XMP:Rating={star_rating}",
-            f"-MicrosoftPhoto:Rating={star_rating}",
-            f"-Rating={star_rating}",
-            f"-RatingPercent={rating_percent}",
-        ])
+            rating_percent = star_rating * 20
+            args.extend([
+                #f"-XMP:Rating={star_rating}",
+                #f"-MicrosoftPhoto:Rating={star_rating}",
+                f"-Rating={star_rating}",
+                f"-RatingPercent={rating_percent}",
+            ])
 
         # Favorite: only SET the label when favorite
         # Note: We don't delete Label when not favorite because:
@@ -662,11 +668,11 @@ def build_exif_args(
         # 3. This prevents update loops when Label can't be removed
 
         if is_favorite:
-            args.extend(["-XMP:Label=Favorite", "-XMP:Favorite=1"])
+            args.append("-XMP:Label=Favorite")
             changes.append("Label")
         else:
             # Wenn kein Favorit: Label löschen und Favorite auf 0 setzen
-            args.extend(["-XMP:Label=", "-XMP:Favorite=0"])
+            args.append("-XMP:Label=")
             changes.append("Label")
 
         changes.append("Rating")
