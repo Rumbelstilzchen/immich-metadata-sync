@@ -169,6 +169,7 @@ def create_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--all", action="store_true", help="Enable all sync modules.")
     parser.add_argument("--people", action="store_true", help="Sync detected people.")
+    parser.add_argument("--tags", action="store_true", help="Sync detected tags.")
     parser.add_argument("--gps", action="store_true", help="Sync GPS data.")
     parser.add_argument("--caption", action="store_true", help="Sync descriptions/captions.")
     parser.add_argument("--time", action="store_true", help="Sync timestamps.")
@@ -193,7 +194,7 @@ def parse_cli_args(argv: Optional[List[str]] = None) -> Tuple[argparse.Namespace
     parser = create_arg_parser()
     args = parser.parse_args(argv)
     # Note: 'albums' is explicitly opt-in and not included in --all by default
-    modes = ["people", "gps", "caption", "time", "rating"]
+    modes = ["people", "gps", "caption", "time", "rating", "tags"]
     active_modes = modes if args.all else [m for m in modes if getattr(args, m)]
     
     # Add albums if explicitly enabled
