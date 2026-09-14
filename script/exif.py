@@ -427,6 +427,8 @@ def convert_bbox_to_mwg_rs(
         "H": round(bbox_h / image_height, MWGRS_COORDINATE_PRECISION),
         "X1": round(x1 / image_width, MWGRS_COORDINATE_PRECISION),
         "Y1": round(y1 / image_height, MWGRS_COORDINATE_PRECISION),
+        "image_width": image_width,
+        "image_height": image_height,        
     }
 
 
@@ -688,7 +690,6 @@ def build_exif_args(
     # 7. FACE COORDINATES SYNC (MWG-RS regions)
     if "face-coordinates" in active_modes:
         people_data = details.get("people", [])
-        region_found = False
         
         region_list = [] # For the virtual comparison tag
         for person in people_data:
@@ -701,53 +702,26 @@ def build_exif_args(
                     face.get("imageWidth"), face.get("imageHeight")
                 )
                 if area:
-                    region_found = True
                     # Structure for virtual comparison
                     region_list.append({
-                        "Area": {**area, "Unit": "normalized"},
-                        "Name": name, "Type": "Face"
+                        **area,
+                        "Name": name
                     })
 
-        if region_found:
+        if region_list:
             # Add -struct flag for proper structure handling
-            args.append("-struct")
+            #args.append("-struct")
             
-            # Clean existing regions first
-            args.append("-XMP-mwg-rs:RegionInfo=")
-            
-            # Add real fields for ExifTool execution
-            for region in region_list:
-                name = region["Name"]
-                area = region["Area"]
-                args.extend([
-                    f"-XMP-mwg-rs:RegionName+={name}",
-                    "-XMP-mwg-rs:RegionType+=Face",
-                    f"-XMP-mwg-rs:RegionAreaX+={area['X_C']}",
-                    f"-XMP-mwg-rs:RegionAreaY+={area['Y_C']}",
-                    f"-XMP-mwg-rs:RegionAreaW+={area['W']}",
-                    f"-XMP-mwg-rs:RegionAreaH+={area['H']}",
-                    "-XMP-mwg-rs:RegionAreaUnit+=normalized"
-                ])
-            
-            first_f = next((p["faces"][0] for p in people_data if p.get("faces")), {})
-            dims = {"W": first_f.get("imageWidth"), "H": first_f.get("imageHeight"), "Unit": "pixel"}
-            args.extend([
-                f"-XMP-mwg-rs:RegionAppliedToDimensionsW={dims['W']}",
-                f"-XMP-mwg-rs:RegionAppliedToDimensionsH={dims['H']}",
-                "-XMP-mwg-rs:RegionAppliedToDimensionsUnit=pixel"
-            ])
-            # The virtual tag: Used by extract_desired_values, but filtered out in execute()
-            regions = {"AppliedToDimensions": dims, "RegionList": region_list}
-            args.append(f"-RegionInfo={json.dumps(regions)}")
-            
+            args.append(write_mwg_rs(region_list))
             args.append(write_mpri_regions(region_list))
 
             changes.append("FaceCoordinates")
-    # . TAGs SYNC
+            
+    # 8. TAGs SYNC
     if "tags" in active_modes:
         tags = [t["value"] for t in details.get("tags", []) if t.get("value")]
         if tags:
-            # Sortiere Namen alphabetisch für konsistente Reihenfolge
+            # Sortiere Tags alphabetisch für konsistente Reihenfolge
             tags_sorted = sorted(tags)
             args.extend([
                 f'-Keywords="{val}"' for val in tags_sorted
@@ -756,6 +730,30 @@ def build_exif_args(
 
     return args, changes
 
+
+def write_mwg_rs(region_list):
+    """
+    Fügt XMP-MPRI Regions als vollständiges struct hinzu.
+    ExifTool akzeptiert MPRI nur als komplettes struct, nicht feldweise.
+    """
+
+    regions = []
+    for region in region_list:
+        
+        rectangle = f'{{X={region["X_C"]},Y={region["Y_C"]},W={region["W"]},H={region["H"]},Unit=normalized}}'
+        name = region["Name"]
+        
+        regions.append(f'{{Name={name},Area={rectangle}},Type=Face}')
+        
+    dimensions = f'{{W={region_list[0]["image_width"]},H={region_list[0]["image_height"]},Unit=pixel}}'
+    
+    # ExifTool benötigt *struct*, nicht als String
+    string_struct = f'{{AppliedToDimensions={dimensions},RegionList=[{",".join(regions)}]}}'
+
+    # ExifTool: struct append
+    ex_arg = f"-RegionInfo={string_struct}"
+
+    return ex_arg
 
 def write_mpri_regions(region_list):
     """
@@ -766,10 +764,10 @@ def write_mpri_regions(region_list):
     regions = []
     for region in region_list:
         area = [
-            region["Area"]["X1"],
-            region["Area"]["Y1"],
-            region["Area"]["W"],
-            region["Area"]["H"]
+            region["X1"],
+            region["Y1"],
+            region["W"],
+            region["H"]
         ]
         rectangle = "|,".join(str(v) for v in area)
         name = region["Name"]
