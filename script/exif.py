@@ -30,7 +30,7 @@ class ExifToolHelper:
         self.delete_sidecar = delete_sidecar
         self.filecounter = 0
     
-    def start(self):os.path.
+    def start(self):
         """Start ExifTool in stay-open mode."""
         self.process = subprocess.Popen(
             ["exiftool", "-stay_open", "True", "-@", "-"],
