@@ -106,9 +106,12 @@ def process_asset(
         return "errors"
 
     if not os.path.exists(full_path):
-        log(f"Skipping asset {asset_id}: file not found at {full_path}", log_file, LogLevel.DEBUG)
-        log(f"HINT: Verify IMMICH_PHOTO_DIR is set correctly (current: {photo_dir})", log_file, LogLevel.DEBUG)
-        return "file_not_found"
+        if os.path.exists(os.path.join(photo_dir,sanitized_path)):
+            full_path = os.path.join(photo_dir,sanitized_path)
+        else:
+            log(f"Skipping asset {asset_id}: file not found at {full_path}", log_file, LogLevel.DEBUG)
+            log(f"HINT: Verify IMMICH_PHOTO_DIR is set correctly (current: {photo_dir})", log_file, LogLevel.DEBUG)
+            return "file_not_found"
 
     exif_args, change_list = build_exif_args(asset, details, active_modes, caption_max_len, album_map)
     if not change_list:
