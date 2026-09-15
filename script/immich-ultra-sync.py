@@ -145,7 +145,7 @@ def process_asset(
         log(f"UPDATE: {clean_rel} - Changing: {', '.join(fields_to_update)}", log_file, LogLevel.INFO)
 
         # Use the sidecar-aware executor which also retries without MicrosoftPhoto:Rating if necessary
-        stdout, stderr = execute_with_sidecar_and_msphoto(["-overwrite_original"] + exif_args, full_path, exiftool, log_file)
+        stdout, stderr = execute_with_sidecar_and_msphoto(["-overwrite_original", "-P"] + exif_args, full_path, exiftool, log_file)
 
         # exiftool.execute returned combined stdout/stderr (or from retry)
         combined = (stdout or "") + (stderr or "")
