@@ -57,7 +57,7 @@ It extracts metadata from the [Immich API](https://api.docs.immich.app) and uses
 
 ## Features
 
-`immich-ultra-sync.py` connects to your Immich instance with an API key, fetches asset metadata, maps Immich paths to the mounted library, and writes values into EXIF/XMP:
+`immich_ultra_sync.py` connects to your Immich instance with an API key, fetches asset metadata, maps Immich paths to the mounted library, and writes values into EXIF/XMP:
 
 - **People** → `XMP:Subject`, `IPTC:Keywords`, `XMP-iptcExt:PersonInImage`
 - **GPS** → `GPSLatitude`, `GPSLongitude`, `GPSAltitude`
@@ -179,7 +179,7 @@ German documentation: [web/doc/de/README.md](web/doc/de/README.md)
 2. Mount your Immich library into the container at `/library` (or set `PHOTO_DIR`).  
 3. Run the sync:  
    ```bash
-   python3 script/immich-ultra-sync.py --all --only-new
+   python3 script/immich_ultra_sync.py --all --only-new
    ```
 4. Trigger an "Offline Assets Scan" in Immich to re-index updated files.
 
@@ -264,22 +264,22 @@ docker-compose up -d
 
 ```bash
 # Sync all metadata including albums
-python3 immich-ultra-sync.py --all --albums
+python3 immich_ultra_sync.py --all --albums
 
 # Sync only people and albums
-python3 immich-ultra-sync.py --people --albums
+python3 immich_ultra_sync.py --people --albums
 
 # Preview what would be synced (dry-run)
-python3 immich-ultra-sync.py --all --albums --dry-run --only-new
+python3 immich_ultra_sync.py --all --albums --dry-run --only-new
 
 # Sync people names and face coordinates
-python3 immich-ultra-sync.py --people --face-coordinates
+python3 immich_ultra_sync.py --people --face-coordinates
 
 # Resume from previous run
-python3 immich-ultra-sync.py --all --resume
+python3 immich_ultra_sync.py --all --resume
 
 # Export statistics
-python3 immich-ultra-sync.py --all --export-stats json
+python3 immich_ultra_sync.py --all --export-stats json
 ```
 
 Common flags:
@@ -311,10 +311,10 @@ The `--only-new` flag enables **change detection** to reduce unnecessary disk wr
 **Example:**
 ```bash
 # Initial sync (all files updated)
-python3 immich-ultra-sync.py --all
+python3 immich_ultra_sync.py --all
 
 # Subsequent syncs (only changed files)
-python3 immich-ultra-sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only-new
 
 ---
 
@@ -342,10 +342,10 @@ Syncing detected people writes person names (when available) into several metada
 **Examples:**
 ```bash
 # Sync only people names
-python3 immich-ultra-sync.py --people
+python3 immich_ultra_sync.py --people
 
 # Preview what would change (no writes)
-python3 immich-ultra-sync.py --people --dry-run --only-new
+python3 immich_ultra_sync.py --people --dry-run --only-new
 ```
 
 
@@ -373,10 +373,10 @@ GPS coordinates from Immich are written back into standard EXIF GPS tags so maps
 **Examples:**
 ```bash
 # Sync GPS coordinates
-python3 immich-ultra-sync.py --gps
+python3 immich_ultra_sync.py --gps
 
 # Sync GPS coordinates but do not write files (dry run)
-python3 immich-ultra-sync.py --gps --dry-run
+python3 immich_ultra_sync.py --gps --dry-run
 ```
 
 
@@ -404,10 +404,10 @@ Captions and descriptions from Immich are synced into IPTC/XMP caption fields.
 **Examples:**
 ```bash
 # Sync captions from Immich
-python3 immich-ultra-sync.py --caption
+python3 immich_ultra_sync.py --caption
 
 # Preview caption changes only
-python3 immich-ultra-sync.py --caption --dry-run --only-new
+python3 immich_ultra_sync.py --caption --dry-run --only-new
 ```
 
 
@@ -461,10 +461,10 @@ This module syncs capture timestamps from Immich into standard EXIF/XMP date fie
 **Examples:**
 ```bash
 # Sync timestamps
-python3 immich-ultra-sync.py --time
+python3 immich_ultra_sync.py --time
 
 # Preview timestamp updates
-python3 immich-ultra-sync.py --time --dry-run --only-new
+python3 immich_ultra_sync.py --time --dry-run --only-new
 ```
 
 
@@ -517,10 +517,10 @@ Star ratings and favorites are now tracked **independently** in the file metadat
 **Examples:**
 ```bash
 # Sync favorites and ratings
-python3 immich-ultra-sync.py --rating
+python3 immich_ultra_sync.py --rating
 
 # Preview rating updates only
-python3 immich-ultra-sync.py --rating --dry-run --only-new
+python3 immich_ultra_sync.py --rating --dry-run --only-new
 ```
 
 General reminder: the `--all` flag enables the core modules (`people`, `gps`, `caption`, `time`, `rating`) for convenience, but opt-in features such as `--albums` and `--face-coordinates` must be enabled explicitly.
@@ -548,13 +548,13 @@ When `--albums` is enabled, the script maintains a persistent cache of album ass
 **Example:**
 ```bash
 # First run fetches from API and caches the result
-python3 immich-ultra-sync.py --all --albums
+python3 immich_ultra_sync.py --all --albums
 
 # Subsequent runs within 24 hours use the cache (much faster)
-python3 immich-ultra-sync.py --all --albums
+python3 immich_ultra_sync.py --all --albums
 
 # Force fresh fetch by clearing the cache
-python3 immich-ultra-sync.py --all --albums --clear-album-cache
+python3 immich_ultra_sync.py --all --albums --clear-album-cache
 ```
 
 ## Face Coordinates (MWG-RS)

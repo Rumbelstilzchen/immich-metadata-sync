@@ -1,7 +1,7 @@
 # Immich Metadata Sync – Technische Dokumentation 
 *(Script v1.5)*
 
-Diese Dokumentation beschreibt Aufbau, Konfiguration und Ablauf des Skripts `immich-ultra-sync.py` im Ordner `/immich-metadata-sync/script/`. Ziel ist es, Immich-Metadaten (Personen, GPS, Beschreibungen, Zeitstempel, Rating, Alben, Gesichtskoordinaten) verlustfrei in die Originaldateien zurückzuschreiben.
+Diese Dokumentation beschreibt Aufbau, Konfiguration und Ablauf des Skripts `immich_ultra_sync.py` im Ordner `/immich-metadata-sync/script/`. Ziel ist es, Immich-Metadaten (Personen, GPS, Beschreibungen, Zeitstempel, Rating, Alben, Gesichtskoordinaten) verlustfrei in die Originaldateien zurückzuschreiben.
 
 Für detaillierte Informationen siehe die englische README.md im Hauptverzeichnis.
 
@@ -22,7 +22,7 @@ script/
 - **`utils.py`**: Enthält alle globalen Konstanten, LogLevel-System, allgemeine Hilfsfunktionen (Logging, Checkpoint, Konfiguration, Album-Cache, Pfad-Validierung)
 - **`api.py`**: RateLimiter-Klasse, API-Aufrufe, Asset-Abruf, Batch-Operationen
 - **`exif.py`**: ExifToolHelper-Klasse (stay-open mode), EXIF-Werte auslesen/schreiben, Normalisierung, MWG-RS-Konvertierung
-- **`immich-ultra-sync.py`**: Hauptlogik (process_asset, CLI-Parsing, main-Funktion)
+- **`immich_ultra_sync.py`**: Hauptlogik (process_asset, CLI-Parsing, main-Funktion)
 
 ## Datenfluss
 1. **Konfiguration & Startparameter**  
@@ -85,23 +85,23 @@ Das Projekt verfügt nun über automatisierte Tests und CI/CD:
 ## Nutzung – Beispiele
 - Alle Module:  
   ```bash
-  python3 immich-ultra-sync.py --all
+  python3 immich_ultra_sync.py --all
   ```
 - People + GPS, nur neue Ratings:  
   ```bash
-  python3 immich-ultra-sync.py --people --gps --only-new
+  python3 immich_ultra_sync.py --people --gps --only-new
   ```
 - Trockenlauf:  
   ```bash
-  python3 immich-ultra-sync.py --all --dry-run
+  python3 immich_ultra_sync.py --all --dry-run
   ```
 - Personen mit Gesichtskoordinaten:  
   ```bash
-  python3 immich-ultra-sync.py --people --face-coordinates
+  python3 immich_ultra_sync.py --people --face-coordinates
   ```
 - Alles inkl. Alben und Gesichtskoordinaten:  
   ```bash
-  python3 immich-ultra-sync.py --all --albums --face-coordinates
+  python3 immich_ultra_sync.py --all --albums --face-coordinates
   ```
 
 ## Fehlersuche

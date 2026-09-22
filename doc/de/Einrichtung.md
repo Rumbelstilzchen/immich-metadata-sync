@@ -26,7 +26,7 @@ Es extrahiert Metadaten aus der [Immich API](https://api.docs.immich.app) und sc
 
 
 ## 🛠 1. Vorbereitung auf dem Host
-Erstelle ein Verzeichnis für das Skript (z.B. `/home/user/immich-tools`) und speichere dort die `immich-ultra-sync.py`.
+Erstelle ein Verzeichnis für das Skript (z.B. `/home/user/immich-tools`) und speichere dort die `immich_ultra_sync.py`.
 
 
 ## 🐳 2. Image Build (Portainer / Docker)
@@ -78,17 +78,17 @@ ls -la /library
 ### C. Synchronisation starten
 Trockenlauf:
 ```bash
-python3 immich-ultra-sync.py --all --dry-run
+python3 immich_ultra_sync.py --all --dry-run
 ```
 
 Vollständiger Lauf:
 ```bash
-python3 immich-ultra-sync.py --all
+python3 immich_ultra_sync.py --all
 ```
 
 Nur neue/ungetaggte Bilder (empfohlen):
 ```bash
-python3 immich-ultra-sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only-new
 ```
 
 ## ⚠️ Wichtige Hinweise

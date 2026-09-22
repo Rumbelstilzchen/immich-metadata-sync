@@ -17,7 +17,7 @@ import pytest
 
 # Hardcoded Pfade für den Container
 PROJECT_ROOT = Path("/app")
-SYNC_SCRIPT = PROJECT_ROOT / "immich-ultra-sync.py"
+SYNC_SCRIPT = PROJECT_ROOT / "immich_ultra_sync.py"
 
 # Konstanten für Normalisierung
 GPS_COORDINATE_PRECISION = 6

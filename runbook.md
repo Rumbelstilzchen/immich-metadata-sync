@@ -58,15 +58,15 @@ ls -la /library
 ### C. Run the sync
 - Dry run:
   ```bash
-  python3 immich-ultra-sync.py --all --dry-run
+  python3 immich_ultra_sync.py --all --dry-run
   ```
 - Full run:
   ```bash
-  python3 immich-ultra-sync.py --all
+  python3 immich_ultra_sync.py --all
   ```
 - Recommended (skip unchanged files):
   ```bash
-  python3 immich-ultra-sync.py --all --only-new
+  python3 immich_ultra_sync.py --all --only-new
   ```
 
 ## ⚠️ Operational notes
@@ -82,7 +82,7 @@ ls -la /library
 <summary><h2>🇩🇪 Deutsche Version</h2></summary>
 
 ## 🛠️ 1. Vorbereitung auf dem Host
-Erstelle ein Verzeichnis für das Skript (z.B. `/home/user/immich-tools`) und speichere dort die `immich-ultra-sync.py`.
+Erstelle ein Verzeichnis für das Skript (z.B. `/home/user/immich-tools`) und speichere dort die `immich_ultra_sync.py`.
 
 ## 🐳 2. Image Build (Portainer / Docker)
 Erstelle ein neues Image `immich-metadata-sync:latest` in Portainer mit folgendem **Dockerfile:**
@@ -137,15 +137,15 @@ ls -la /library
 ### C. Synchronisation starten
 - Trockenlauf:
   ```bash
-  python3 immich-ultra-sync.py --all --dry-run
+  python3 immich_ultra_sync.py --all --dry-run
   ```
 - Vollständiger Lauf:
   ```bash
-  python3 immich-ultra-sync.py --all
+  python3 immich_ultra_sync.py --all
   ```
 - Nur neue/ungetaggte Bilder (empfohlen):
   ```bash
-  python3 immich-ultra-sync.py --all --only-new
+  python3 immich_ultra_sync.py --all --only-new
   ```
 
 ## ⚠️ Wichtige Hinweise

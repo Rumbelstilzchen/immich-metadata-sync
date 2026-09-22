@@ -39,13 +39,13 @@ The change detection system has been extended:
 
 ```bash
 # Sync people names and face coordinates
-python3 immich-ultra-sync.py --people --face-coordinates
+python3 immich_ultra_sync.py --people --face-coordinates
 
 # Sync all metadata plus face coordinates
-python3 immich-ultra-sync.py --all --face-coordinates
+python3 immich_ultra_sync.py --all --face-coordinates
 
 # Preview what would be synced (dry-run)
-python3 immich-ultra-sync.py --all --face-coordinates --dry-run --only-new
+python3 immich_ultra_sync.py --all --face-coordinates --dry-run --only-new
 ```
 
 ### 📝 MWG-RS Example Output

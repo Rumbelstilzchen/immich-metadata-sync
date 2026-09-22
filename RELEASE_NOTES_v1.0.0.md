@@ -43,13 +43,13 @@ On repeat synchronizations:
 
 ```bash
 # Basic usage with change detection
-python3 immich-ultra-sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only-new
 
 # Sync only specific metadata with change detection
-python3 immich-ultra-sync.py --people --gps --only-new
+python3 immich_ultra_sync.py --people --gps --only-new
 
 # Dry run to see what would change
-python3 immich-ultra-sync.py --all --only-new --dry-run
+python3 immich_ultra_sync.py --all --only-new --dry-run
 ```
 
 ### 📝 Example Output

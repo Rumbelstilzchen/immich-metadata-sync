@@ -19,9 +19,9 @@ import api
 
 # Import main script functions
 import importlib.util
-spec = importlib.util.spec_from_file_location("immich_ultra_sync_main", SCRIPT_DIR / "immich-ultra-sync.py")
+spec = importlib.util.spec_from_file_location("immich_ultra_sync_main", SCRIPT_DIR / "immich_ultra_sync.py")
 if spec is None or spec.loader is None:
-    raise ImportError(f"Unable to load module from {SCRIPT_DIR / 'immich-ultra-sync.py'}")
+    raise ImportError(f"Unable to load module from {SCRIPT_DIR / 'immich_ultra_sync.py'}")
 main_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(main_module)
 

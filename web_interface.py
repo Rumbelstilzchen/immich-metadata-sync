@@ -40,7 +40,7 @@ sync_status = {
 }
 
 SCRIPT_DIR = Path(__file__).parent / 'script'
-SYNC_SCRIPT = SCRIPT_DIR / 'immich-ultra-sync.py'
+SYNC_SCRIPT = SCRIPT_DIR / 'immich_ultra_sync.py'
 
 
 @app.route('/')

@@ -33,7 +33,7 @@ IMMICH_PATH_SEGMENTS=4
 ```
 
 ***
-Die `--people`-Option in `immich-ultra-sync.py` synchronisiert erkannte Personennamen aus Immich in die EXIF/XMP-Metadaten der Mediendatei. Konkret:
+Die `--people`-Option in `immich_ultra_sync.py` synchronisiert erkannte Personennamen aus Immich in die EXIF/XMP-Metadaten der Mediendatei. Konkret:
 
 - **Was geschrieben wird:** Die Namen der mit dem Asset in Immich verknüpften Personen werden gesammelt und als komma-getrennte Liste (z. B. "Alice,Bob") in folgende Metadatenfelder geschrieben:
 

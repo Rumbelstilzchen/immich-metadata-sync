@@ -107,7 +107,7 @@ fi
 
 echo ""
 echo "1.4 Python syntax check..."
-python3 -m py_compile exif.py immich-ultra-sync.py 2>&1
+python3 -m py_compile exif.py immich_ultra_sync.py 2>&1
 if [ $? -eq 0 ]; then
     test_result 0 "Python syntax valid"
 else
@@ -116,7 +116,7 @@ fi
 
 echo ""
 echo "1.5 Checking --only-new logic..."
-if grep -q "if only_new and current_values:" immich-ultra-sync.py; then
+if grep -q "if only_new and current_values:" immich_ultra_sync.py; then
     test_result 1 "Incorrect --only-new pre-check still present"
 else
     test_result 0 "Incorrect --only-new pre-check removed"
@@ -225,7 +225,7 @@ done
 print_section "Phase 4: Dry-Run Test"
 
 echo "4.1 Running dry-run sync..."
-DRY_OUTPUT=$(python3 immich-ultra-sync.py --rating --only-new --dry-run 2>&1)
+DRY_OUTPUT=$(python3 immich_ultra_sync.py --rating --only-new --dry-run 2>&1)
 echo "$DRY_OUTPUT" | grep -E "\[INFO\]|\[WARN\]|\[ERROR\]"
 
 echo ""
@@ -247,7 +247,7 @@ fi
 print_section "Phase 5: First Sync"
 
 echo "5.1 Running first sync..."
-SYNC1_OUTPUT=$(python3 immich-ultra-sync.py --rating --only-new 2>&1)
+SYNC1_OUTPUT=$(python3 immich_ultra_sync.py --rating --only-new 2>&1)
 echo "$SYNC1_OUTPUT" | tail -20
 
 echo ""
@@ -305,7 +305,7 @@ sleep 2
 
 echo ""
 echo "7.2 Running second sync (should skip all files)..."
-SYNC2_OUTPUT=$(python3 immich-ultra-sync.py --rating --only-new 2>&1)
+SYNC2_OUTPUT=$(python3 immich_ultra_sync.py --rating --only-new 2>&1)
 echo "$SYNC2_OUTPUT" | tail -20
 
 echo ""
@@ -357,7 +357,7 @@ if [ -f "$TEST_FILE" ]; then
     # Sync should detect the change
     echo ""
     echo "8.2 Running sync (should detect and fix rating)..."
-    SYNC3_OUTPUT=$(python3 immich-ultra-sync.py --rating --only-new 2>&1)
+    SYNC3_OUTPUT=$(python3 immich_ultra_sync.py --rating --only-new 2>&1)
     
     if echo "$SYNC3_OUTPUT" | grep -q "$(basename "$TEST_FILE")"; then
         test_result 0 "Change detection works (file detected and updated)"
@@ -416,7 +416,7 @@ print_section "Phase 10: Performance Metrics"
 
 echo "10.1 Running performance test..."
 TIME_START=$(date +%s.%N)
-PERF_OUTPUT=$(python3 immich-ultra-sync.py --rating --only-new 2>&1)
+PERF_OUTPUT=$(python3 immich_ultra_sync.py --rating --only-new 2>&1)
 TIME_END=$(date +%s.%N)
 DURATION=$(echo "$TIME_END - $TIME_START" | bc)
 

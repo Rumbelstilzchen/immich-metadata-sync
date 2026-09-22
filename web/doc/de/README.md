@@ -4,7 +4,7 @@
 
 Das Verzeichnis `/web` stellt eine **optionale browserbasierte Oberfläche** bereit,
 mit der Sync-Vorgänge ohne Kommandozeile gesteuert werden können.  
-Das CLI (`script/immich-ultra-sync.py`) bleibt vollständig unabhängig und ist
+Das CLI (`../../../script/immich_ultra_sync.py`) bleibt vollständig unabhängig und ist
 die empfohlene Variante für automatisierte / serverseitige Nutzung.
 
 ---

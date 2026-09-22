@@ -41,7 +41,7 @@ sync_status = {
 
 REPO_ROOT = Path(__file__).parent.parent
 SCRIPT_DIR = REPO_ROOT / 'script'
-SYNC_SCRIPT = SCRIPT_DIR / 'immich-ultra-sync.py'
+SYNC_SCRIPT = SCRIPT_DIR / 'immich_ultra_sync.py'
 
 
 @app.route('/')

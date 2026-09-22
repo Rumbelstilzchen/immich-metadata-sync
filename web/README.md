@@ -4,7 +4,7 @@
 
 The `/web` directory provides an **optional browser-based interface** for managing
 sync operations without using the command line.  
-The CLI (`script/immich-ultra-sync.py`) remains fully independent and is the
+The CLI (`../script/immich_ultra_sync.py`) remains fully independent and is the
 recommended approach for automated / server use.
 
 ---
