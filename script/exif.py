@@ -207,39 +207,40 @@ def parse_rating_output(output: str) -> str:
 
 def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str, Any]:
     """Read current EXIF values from file based on active modes using JSON output for reliable parsing."""
-    tags_to_read = []
+    tags_to_read = {}
     
     if "people" in active_modes:
-        tags_to_read.extend(["Subject", "Keywords", "PersonInImage"])  # ← FIX: Kein Namespace
+        tags_to_read['People'] = ["Keywords"]  # ← FIX: Kein Namespace
     if "tags" in active_modes:
-        tags_to_read.extend(["Keywords"])  # ← FIX: Kein Namespace
+        tags_to_read['Tags'] = ["Keywords"]  # ← FIX: Kein Namespace
     if "gps" in active_modes:
-        tags_to_read.extend(["GPSLatitude", "GPSLongitude", "GPSAltitude"])
+        tags_to_read['GPS'] = ["GPSLatitude", "GPSLongitude", "GPSAltitude"]
     if "caption" in active_modes:
-        tags_to_read.extend(["Description", "Caption-Abstract"])
-    if "time" in active_modes:
-        tags_to_read.extend([
-            "DateTimeOriginal", "CreateDate", "ModifyDate", "DateCreated",
-            "XMP:CreateDate", "XMP:ModifyDate", "XMP:MetadataDate",
-            "IPTC:DateCreated", "IPTC:TimeCreated",
-            "QuickTime:CreateDate", "QuickTime:ModifyDate",
-            "FileCreateDate", "FileModifyDate"
-        ])
+        tags_to_read['Caption'] = ["Description", "Caption-Abstract"]
+    # if "time" in active_modes:
+    #     tags_to_read.extend([
+    #         "DateTimeOriginal", "CreateDate", "ModifyDate", "DateCreated",
+    #         "XMP:CreateDate", "XMP:ModifyDate", "XMP:MetadataDate",
+    #         "IPTC:DateCreated", "IPTC:TimeCreated",
+    #         "QuickTime:CreateDate", "QuickTime:ModifyDate",
+    #         "FileCreateDate", "FileModifyDate"
+    #     ])
     if "rating" in active_modes:
-        tags_to_read.extend(["Rating", "XMP:Rating", "MicrosoftPhoto:Rating", "RatingPercent",
-                             "XMP:Label"]) # <-- Hinzugefügt: XMP:Favorite
+        tags_to_read['Rating'] = ["Rating", "RatingPercent"]
+        tags_to_read['Label'] = ["XMP:Label"] # <-- Hinzugefügt: XMP:Favorite
     
     if "albums" in active_modes:
-        tags_to_read.extend(["Event", "HierarchicalSubject", "UserComment"])
+        tags_to_read['Albums'] = ["Event", "HierarchicalSubject", "UserComment"]
     if "face-coordinates" in active_modes:
-        tags_to_read.extend(["XMP-mwg-rs:RegionInfo"]) # Expliziter Namespace
+        tags_to_read['FaceCoordinates'] = ["XMP-mwg-rs:RegionInfo", "RegionInfoMP"] # Expliziter Namespace
     
     if not tags_to_read:
         return {}
+    combined_tags = [tag for sublist in tags_to_read.values() for tag in sublist]
     
     try:
         # ← VERBESSERUNG 1: import json entfernt (jetzt oben)
-        cmd = ["exiftool", "-json", "-n", "-struct"] + [f"-{tag}" for tag in tags_to_read] + [full_path]
+        cmd = ["exiftool", "-json", "-n", "-struct"] + [f"-{tag}" for tag in set(combined_tags)] + [full_path]
         result = subprocess.run(
             cmd,
             capture_output=True,
@@ -253,28 +254,51 @@ def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str
             return {}
         
         file_data = data[0]
-        values = {}
+        output = {}
         
-        for tag in tags_to_read:
+        for category, tags in tags_to_read.items():
             # Try full tag name first, then short name (without namespace)
-            tag_short = tag.split(":")[-1]
-            value = file_data.get(tag, file_data.get(tag_short))
-            
-            if value is not None and value != "" and value != "-":
-                # Handle structs (RegionInfo is a dict)
-                if isinstance(value, dict):
-                    values[tag] = json.dumps(value, sort_keys=True)
-                # Handle arrays (Subject is an array)
-                elif isinstance(value, list):
-                    # Join array elements, or take first element if it's already comma-separated
-                    if len(value) == 1:
-                        values[tag] = str(value[0])
+            values = []
+            for tag in tags:
+                tag_short = tag.split(":")[-1]
+                value = file_data.get(tag, file_data.get(tag_short))
+                if tag_short == 'RegionInfoMP':
+                    values.append(sorted([faces.get('PersonDisplayName') for faces in value.get('Regions', [])]))
+                    continue
+                if tag_short == 'RegionInfo':
+                    values.append(sorted([faces.get('Name') for faces in value.get('RegionList', [])]))
+                    continue
+                if category == "People":
+                    if isinstance(value, list):
+                        values.append(sorted([name.split("/")[-1] for name in value if isinstance(name, str) and name.startswith("Personen/") and not name.startswith("Albums/")]))
                     else:
-                        values[tag] = ",".join(str(v) for v in value)
+                        output[category] = None
+                    continue
+                if category == "Tags":
+                    if isinstance(value, list):
+                        values.append(sorted([name for name in value if isinstance(name, str) and not name.startswith("Personen/") and not name.startswith("Albums/")]))
+                    else:
+                        output[category] = None
+                    continue
+                if category in ["GPS", "Rating"]:
+                    if category not in output:
+                        output[category] = []
+                    output[category].append(value)
+                    continue
+                if category=="Label":
+                    if value is not None:
+                        output[category] = value =="Favorite"
+                    else:
+                        output[category] = False
+                    continue
+            if category not in output:
+                if values and all(v==values[0] for v in values):
+                    output[category] = values[0]
                 else:
-                    values[tag] = str(value)
-        
-        return values
+                    output[category] = None
+            
+
+        return output
     except (subprocess.TimeoutExpired, subprocess.CalledProcessError, subprocess.SubprocessError, ValueError, KeyError):
         return {}
 
@@ -559,74 +583,81 @@ def build_exif_args(
     active_modes: List[str],
     caption_max_len: int = DEFAULT_CAPTION_MAX_LEN,
     album_map: Optional[Dict[str, List[str]]] = None,
-) -> Tuple[List[str], List[str]]:
+) -> Tuple[List[str], dict]:
     """Build ExifTool arguments based on selected modes. Populates XMP (modern) and IPTC fields simultaneously."""
     args: List[str] = []
-    changes: List[str] = []
+    changes = {}
     exif = details.get("exifInfo", {}) or {}
 
     # 1. PEOPLE SYNC (face recognition)
     if "people" in active_modes:
+        changes["People"] = None
         people = [p["name"] for p in details.get("people", []) if p.get("name")]
         if people:
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
             people_sorted = sorted(people)
             args.extend([f'-Keywords=Personen/{val}' for val in people_sorted])
-            changes.append("People")
+            changes["People"] = people_sorted
 
     # 2. LOCATION SYNC (GPS & altitude)
     if "gps" in active_modes:
         lat, lon = exif.get("latitude"), exif.get("longitude")
         if lat is not None and lon is not None:
-            alt = exif.get("altitude", 0) or 0
-            args.extend([f"-GPSLatitude={lat}", f"-GPSLongitude={lon}", f"-GPSAltitude={alt}"])
-            changes.append("GPS")
+            args.extend([f"-GPSLatitude={lat}", f"-GPSLongitude={lon}"])
+            alt = exif.get("altitude")
+            if alt is not None:
+                args.append(f"-GPSAltitude={alt}")
+            changes["GPS"] = [lat, lon, alt]
 
     # 3. CAPTION SYNC
     if "caption" in active_modes:
+        changes["Caption"] = None
         cap = exif.get("description")
         if cap:
             safe_limit = normalize_caption_limit(caption_max_len)
             clean_cap = str(cap).replace("\n", " ").strip()[:safe_limit]
             args.extend([f"-XMP:Description={clean_cap}", f"-IPTC:Caption-Abstract={clean_cap}"])
-            changes.append("Caption")
+            changes["Caption"] = clean_cap
+        else:
+            # Clear caption if none provided
+            args.extend(["-XMP:Description=", "-IPTC:Caption-Abstract="])
 
     # 4. TIME SYNC (deterministic oldest-date selection and broad timestamp writing)
     if "time" in active_modes:
         # Combine asset-level and detail-level data for select_oldest_date_from_asset
         combined = {**asset}
-        combined["exifInfo"] = exif
-        if "fileCreatedAt" not in combined and "fileCreatedAt" in details:
-            combined["fileCreatedAt"] = details["fileCreatedAt"]
-        if "fileModifiedAt" not in combined and "fileModifiedAt" in details:
-            combined["fileModifiedAt"] = details["fileModifiedAt"]
-        if "originalPath" not in combined and "originalPath" in details:
-            combined["originalPath"] = details["originalPath"]
-        if "originalFileName" not in combined and "originalFileName" in details:
-            combined["originalFileName"] = details["originalFileName"]
-
-        parsed_date = select_oldest_date_from_asset(combined)
-
-        if parsed_date:
-            # Format to EXIF: YYYY:MM:DD HH:MM:SS (no timezone)
-            clean_date = parsed_date.strftime("%Y:%m:%d %H:%M:%S")
-            iso_date = parsed_date.strftime("%Y-%m-%d")
-            iso_time = parsed_date.strftime("%H:%M:%S")
-            iso_datetime = parsed_date.strftime("%Y-%m-%dT%H:%M:%S")
-            args.extend([
-                f"-AllDates={clean_date}",
-                f"-XMP:CreateDate={clean_date}",
-                f"-XMP:ModifyDate={clean_date}",
-                f"-XMP:MetadataDate={clean_date}",
-                f"-IPTC:DateCreated={iso_date}",
-                f"-IPTC:TimeCreated={iso_time}",
-                f"-QuickTime:CreateDate={iso_datetime}",
-                f"-QuickTime:ModifyDate={iso_datetime}",
-                f"-FileCreateDate={iso_datetime}",
-                f"-FileModifyDate={iso_datetime}",
-                f"-XMP-photoshop:DateCreated={iso_date}",
-            ])
-            changes.append("Time")
+        # combined["exifInfo"] = exif
+        # if "fileCreatedAt" not in combined and "fileCreatedAt" in details:
+        #     combined["fileCreatedAt"] = details["fileCreatedAt"]
+        # if "fileModifiedAt" not in combined and "fileModifiedAt" in details:
+        #     combined["fileModifiedAt"] = details["fileModifiedAt"]
+        # if "originalPath" not in combined and "originalPath" in details:
+        #     combined["originalPath"] = details["originalPath"]
+        # if "originalFileName" not in combined and "originalFileName" in details:
+        #     combined["originalFileName"] = details["originalFileName"]
+        #
+        # parsed_date = select_oldest_date_from_asset(combined)
+        #
+        # if parsed_date:
+        #     # Format to EXIF: YYYY:MM:DD HH:MM:SS (no timezone)
+        #     clean_date = parsed_date.strftime("%Y:%m:%d %H:%M:%S")
+        #     iso_date = parsed_date.strftime("%Y-%m-%d")
+        #     iso_time = parsed_date.strftime("%H:%M:%S")
+        #     iso_datetime = parsed_date.strftime("%Y-%m-%dT%H:%M:%S")
+        #     args.extend([
+        #         f"-AllDates={clean_date}",
+        #         f"-XMP:CreateDate={clean_date}",
+        #         f"-XMP:ModifyDate={clean_date}",
+        #         f"-XMP:MetadataDate={clean_date}",
+        #         f"-IPTC:DateCreated={iso_date}",
+        #         f"-IPTC:TimeCreated={iso_time}",
+        #         f"-QuickTime:CreateDate={iso_datetime}",
+        #         f"-QuickTime:ModifyDate={iso_datetime}",
+        #         f"-FileCreateDate={iso_datetime}",
+        #         f"-FileModifyDate={iso_datetime}",
+        #         f"-XMP-photoshop:DateCreated={iso_date}",
+        #     ])
+        #     changes.append("Time")
 
     # 5. RATING & FAVORITE SYNC (independent tracking)
     if "rating" in active_modes:
@@ -635,19 +666,6 @@ def build_exif_args(
         if star_rating is None:
             star_rating = asset.get("rating")
         is_favorite = asset.get("isFavorite", False)
-
-        # === TEMPORARY DEBUG - Remove after testing ===
-        #orig_path = asset.get("originalPath", "unknown")
-        #exif_rating = exif.get("rating")
-        #asset_rating = asset.get("rating")
-        #log(f"[RATING-DEBUG] File: {orig_path}", log_file, LogLevel.INFO)
-        #log(f"[RATING-DEBUG]   exif.rating={exif_rating}, asset.rating={asset_rating}, isFavorite={is_favorite}", log_file, LogLevel.INFO)
-        #if star_rating is None:
-        #    log(f"[RATING-DEBUG]   → star_rating=None, will calculate below", log_file, LogLevel.INFO)
-        #else:
-        #    log(f"[RATING-DEBUG]   → star_rating={star_rating}", log_file, LogLevel.INFO)
-        # === END DEBUG ===
-
 
         if star_rating is not None:
             star_rating = int(star_rating)
@@ -661,6 +679,7 @@ def build_exif_args(
                 f"-Rating=",
                 f"-RatingPercent=",
             ])
+            changes["Rating"] = [None, None]
         else:
             rating_percent = star_rating * 20
             args.extend([
@@ -669,26 +688,20 @@ def build_exif_args(
                 f"-Rating={star_rating}",
                 f"-RatingPercent={rating_percent}",
             ])
+            changes["Rating"] = [star_rating, rating_percent]
 
-        # Favorite: only SET the label when favorite
-        # Note: We don't delete Label when not favorite because:
-        # 1. ExifTool might not support deletion for all file types
-        # 2. Label can be used for other purposes (color coding, etc.)
-        # 3. This prevents update loops when Label can't be removed
-
+        changes["Label"] = False
         if is_favorite:
             args.append("-XMP:Label=Favorite")
-            changes.append("Label")
+            changes["Label"] = True
         else:
             # Wenn kein Favorit: Label löschen und Favorite auf 0 setzen
             args.append("-XMP:Label=")
-            changes.append("Label")
-
-        changes.append("Rating")
 
     # 6. ALBUM SYNC (new section after rating)
     if "albums" in active_modes and album_map:
         album_names = album_map.get(asset.get("id"), [])
+        changes["Albums"] = None
         if album_names:
             # Primary album as Event
             args.append(f"-XMP-iptcExt:Event={album_names[0]}")
@@ -700,12 +713,17 @@ def build_exif_args(
             # NEW: Write album names to EXIF:UserComment (for Windows Comments)
             args.append(f"-EXIF:UserComment={','.join(album_names)}")
             
-            changes.append("Albums")
+            changes["Albums"] = album_names
+        else:
+            # Clear album-related fields if no albums
+            args.append("-XMP-iptcExt:Event=")
+            args.append("-XMP:HierarchicalSubject=")
+            args.append("-EXIF:UserComment=")
 
     # 7. FACE COORDINATES SYNC (MWG-RS regions)
     if "face-coordinates" in active_modes:
         people_data = details.get("people", [])
-        
+        changes["FaceCoordinates"] = []
         region_list = [] # For the virtual comparison tag
         for person in people_data:
             name = person.get("name")
@@ -722,7 +740,8 @@ def build_exif_args(
                         **area,
                         "Name": name
                     })
-
+                    changes["FaceCoordinates"].append(name)
+        changes["FaceCoordinates"] = sorted(changes["FaceCoordinates"]) if changes["FaceCoordinates"] else None
         if region_list:
             # Add -struct flag for proper structure handling
             #args.append("-struct")
@@ -730,18 +749,27 @@ def build_exif_args(
             args.append(write_mwg_rs(region_list))
             args.append(write_mpri_regions(region_list))
 
-            changes.append("FaceCoordinates")
+        else:
+            # Clear MWG-RS region info if no faces
+            args.append("-XMP-mwg-rs:RegionInfo=")
+            args.append("-XMP-mwg-rs:RegionInfoMP=")
             
     # 8. TAGs SYNC
     if "tags" in active_modes:
         tags = [t["value"] for t in details.get("tags", []) if t.get("value")]
+        changes["Tags"] = None
         if tags:
             # Sortiere Tags alphabetisch für konsistente Reihenfolge
             tags_sorted = sorted(tags)
             args.extend([
                 f'-Keywords={val}' for val in tags_sorted
             ])
-            changes.append("Tags")
+            changes["Tags"] = tags_sorted
+
+    if 'Tags' in changes or 'People' in changes:
+        # IF both are empty or not present, clear IPTC:Keywords to avoid stale data
+        if  changes.get("Tags") is None and changes.get("FaceCoordinates") is None:
+            args.append("-Keywords=")
 
     return args, changes
 

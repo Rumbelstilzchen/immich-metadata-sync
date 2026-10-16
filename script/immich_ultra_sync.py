@@ -119,21 +119,16 @@ def process_asset(
 
     # ALWAYS check if update is needed by comparing current vs desired values
     current_values = get_current_exif_values(full_path, active_modes)
-    desired_values = extract_desired_values(exif_args)
 
     # Determine which fields actually need updating
     fields_to_update = []
-    for tag, desired in desired_values.items():
+    for category, desired in change_list.items():
         # For comparison, try both full tag name and short name (without namespace)
-        tag_short = tag.split(":")[-1]
-        current = current_values.get(tag, current_values.get(tag_short, ""))
-        normalized_current = normalize_exif_value(current, tag)
-        normalized_desired = normalize_exif_value(desired, tag)
         
-        if normalized_current != normalized_desired:
+        if desired != current_values.get(category):
             # DEBUG: Uncomment for troubleshooting
             # log(f"DEBUG {clean_rel}: Tag={tag} | Current='{normalized_current}' | Desired='{normalized_desired}'", log_file, LogLevel.DEBUG)
-            fields_to_update.append(tag)
+            fields_to_update.append(category)
 
     # Skip if no updates needed (applies to both modes)
     if not fields_to_update:
