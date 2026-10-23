@@ -639,8 +639,8 @@ def main() -> None:
         LogLevel.INFO,
         extra={"statistics": statistics},
     )
-
-    save_last_successfull_run(current_runtime, log_file)
+    if not dry_run:
+        save_last_successfull_run(current_runtime, log_file)
 
     # Export statistics if requested
     if args.export_stats:
