@@ -508,8 +508,12 @@ def main() -> None:
         if args.clear_album_cache:
             clear_album_cache(log_file)
         album_map = load_album_map(log_file, headers, base_url)
-
-    nr_assets = fetch_asset_nr(headers, base_url, log_file, last_runtime)
+    try:
+        nr_assets = fetch_asset_nr(headers, base_url, log_file, last_runtime)
+    except Exception as e:
+        log(f"Error fetching asset count: {e}", log_file, LogLevel.ERROR)
+        sys.exit(1)
+    log(f"Total assets to process: {nr_assets}", log_file, LogLevel.INFO)
     # Initialize progress bar if available
     if TQDM_AVAILABLE and not dry_run:
         progress = tqdm(total=nr_assets, desc="Syncing", unit="file")
