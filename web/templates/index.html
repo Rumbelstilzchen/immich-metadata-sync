@@ -298,6 +298,10 @@
                         <span><strong>Sync Tags:</strong> Write tag information to XMP metadata</span>
                     </label>
                     <label>
+                        <input type="checkbox" id="arg_gps" checked>
+                        <span><strong>Sync GPS:</strong> Write GPS information to XMP metadata</span>
+                    </label>
+                    <label>
                         <input type="checkbox" id="arg_caption" checked>
                         <span><strong>Sync Descriptions:</strong> Write description information to XMP metadata</span>
                     </label>
@@ -306,7 +310,7 @@
                         <span><strong>Sync Rating:</strong> Write rating information to XMP metadata</span>
                     </label>
                     <label>
-                        <input type="checkbox" id="arg_times" disabled>
+                        <input type="checkbox" id="arg_time" disabled>
                         <span><strong>Sync Times:</strong> Write time information to XMP metadata (cannot be enabled - disable is hardcoded)</span>
                     </label>
                 </div>
@@ -353,14 +357,16 @@
                 const config = await response.json();
                 document.getElementById('arg_dry_run').checked = config.dry_run;
                 document.getElementById('arg_only_new').checked = config.only_new;
-                document.getElementById('arg_albums').checked = config.modes.albums;
-                document.getElementById('arg_people').checked = config.modes.people;
-                document.getElementById('arg_face_coordinates').checked = config.modes.face_coordinates;
-                document.getElementById('arg_tags').checked = config.modes.tags;
-                document.getElementById('arg_gps').checked = config.modes.gps;
-                document.getElementById('arg_caption').checked = config.modes.caption;
-                document.getElementById('arg_time').checked = config.modes.time;
-                document.getElementById('arg_rating').checked = config.modes.rating;
+                if ('modes' in config) {
+                    document.getElementById('arg_albums').checked = config.modes.albums;
+                    document.getElementById('arg_people').checked = config.modes.people;
+                    document.getElementById('arg_face_coordinates').checked = config.modes.face_coordinates;
+                    document.getElementById('arg_tags').checked = config.modes.tags;
+                    document.getElementById('arg_gps').checked = config.modes.gps;
+                    document.getElementById('arg_caption').checked = config.modes.caption;
+                    document.getElementById('arg_time').checked = config.modes.time;
+                    document.getElementById('arg_rating').checked = config.modes.rating;
+                }
             } catch (error) {
                 console.error('Error refreshing status:', error);
                 showAlert('Error refreshing status: ' + error.message, 'error');
