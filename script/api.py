@@ -177,7 +177,7 @@ def fetch_asset_nr(
         "POST", "/search/statistics", headers, base_url, log_file, {"filter": {}}
     )
     if isinstance(raw, dict):
-        return raw.get("count", 0)
+        return raw.get("total", 0)
     return 0
 
 
