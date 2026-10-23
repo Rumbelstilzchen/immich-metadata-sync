@@ -303,7 +303,7 @@
                     </label>
                     <label>
                         <input type="checkbox" id="arg_caption" checked>
-                        <span><strong>Sync Descriptions:</strong> Write description information to XMP metadata</span>
+                        <span><strong>Sync Caption:</strong> Write description information to XMP metadata</span>
                     </label>
                     <label>
                         <input type="checkbox" id="arg_rating" checked>
@@ -417,7 +417,7 @@
                 lastResultEl.textContent = '-';
             }
         }
-        
+
         async function startSync() {
             const syncBtn = document.getElementById('sync-btn');
             const options = {
@@ -427,7 +427,7 @@
                 people: document.getElementById('arg_people').checked,
                 face_coordinates: document.getElementById('arg_face_coordinates').checked,
                 tags: document.getElementById('arg_tags').checked,
-                descriptions: document.getElementById('arg_caption').checked,
+                caption: document.getElementById('arg_caption').checked,
                 time: document.getElementById('arg_time').checked,
                 rating: document.getElementById('arg_rating').checked
             };
