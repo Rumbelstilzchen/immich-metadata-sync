@@ -521,10 +521,11 @@ def main() -> None:
         progress = None
 
     total_batches = (nr_assets + page_size - 1) // page_size
-
+    log(f"Processing in {total_batches} batches of up to {page_size} assets each", log_file, LogLevel.INFO)
     for batch_num, asset_batch in enumerate(
         fetch_assets(headers, base_url, page_size, log_file, last_runtime)
     ):
+        log(f"Processing batch {batch_num+1} of {total_batches}", log_file, LogLevel.INFO)
         statistics["total"] += len(asset_batch)
 
         filtered_batch = [

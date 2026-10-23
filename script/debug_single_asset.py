@@ -23,7 +23,7 @@ from typing import Any, Optional, TypedDict
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from api import fetch_asset_details_batch, fetch_assets
+from api import fetch_asset_details_batch, fetch_assets,fetch_asset_nr
 from exif import (ExifToolHelper, build_exif_args, check_exiftool,
                   execute_with_sidecar_and_msphoto, get_current_exif_values)
 from immich_ultra_sync import load_album_map
@@ -64,6 +64,7 @@ CONFIG: DebugConfig = {
     "SERVER_IP": "192.168.2.56",  # IP address or hostname
     "SERVER_PORT": 2283,  # Immich server port
     "API_KEY": "KlIuJEtoGdSd0lZbfs6DtNINPFK4pCN4WA62u7fSrVw",  # Get this from Immich Settings > Account
+    #"API_KEY": "GgAv6npSlUTHCJKGsZEEXHIcI3ThcZB0p8sJBl7F8Jc",  # Get this from Immich Settings > Account
     # Asset Configuration
     "ASSET_ID": "e39c66e8-c0a7-4139-8b30-75bf06f51630",  # UUID of the asset to debug
     # "FILE_PATH": r"C:\Users\Peter\PycharmProjects\immich-metadata-sync\foto_test\20230911_205936_P9110347.JPG",  # Local file path (used for writing EXIF)
@@ -206,6 +207,8 @@ def main():
     debug_print("ACTIVE MODES", active_modes)
     debug_print("CONFIGURATION", CONFIG)
 
+
+
     # Check exiftool
     print(f"\n[2] Checking exiftool...")
     try:
@@ -222,6 +225,12 @@ def main():
     current_runtime = datetime.now(timezone.utc).isoformat()
     last_runtime = load_last_successfull_run(log_file)
     auth_header = {"x-api-key": api_key}
+
+    try:
+        nr_assets = fetch_asset_nr(auth_header, server_url, log_file, last_runtime)
+    except Exception as e:
+        print(f"Error fetching asset count: {e}")
+        sys.exit(1)
 
     album_map = {}
     if CONFIG["ENABLE_ALBUMS"]:
