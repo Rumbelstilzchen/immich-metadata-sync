@@ -143,8 +143,8 @@ def perform_field_sync_test(field: str, image_path: str, dry_run: bool = True, e
     # 1. Sync ausführen
     cmd = ["python3", str(SYNC_SCRIPT), flag]
     if dry_run:
-        cmd.append("--dry-run")
-        log("WARN: Dry-run aktiviert – nichts wird geschrieben.")
+        cmd.append("--dry_run")
+        log("WARN: dry_run aktiviert – nichts wird geschrieben.")
     log(f"Führe Sync aus: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, cwd=PROJECT_ROOT)
     if result.returncode != 0:
@@ -177,13 +177,13 @@ def main():
     parser.add_argument("--field", choices=list(TESTS.keys()), help="Einzelnes Feld testen.")
     parser.add_argument("--all", action="store_true", help="Alle Felder testen und Summary ausgeben.")
     parser.add_argument("--image", required=True, help="Pfad zum Test-Bild.")
-    parser.add_argument("--no-dry-run", action="store_true", help="Echten Sync ausführen.")
+    parser.add_argument("--no-dry_run", action="store_true", help="Echten Sync ausführen.")
     parser.add_argument("--expected", help="Erwarteten Wert überschreiben.")
     parser.add_argument("--log-file", type=Path, default=DEFAULT_LOG_FILE, help="Log-Datei.")
     
     args = parser.parse_args()
     
-    log(f"Starte Session. Bild: {args.image}, Dry-run: {not args.no_dry_run}", args.log_file)
+    log(f"Starte Session. Bild: {args.image}, dry_run: {not args.no_dry_run}", args.log_file)
     
     if args.field:
         success, found_value = perform_field_sync_test(args.field, args.image, dry_run=not args.no_dry_run, expected_override=args.expected)

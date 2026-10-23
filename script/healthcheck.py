@@ -1,11 +1,13 @@
 import os
 import sys
+
 import requests
+
 
 def main():
     # Load environment variables
-    base_url = os.getenv('IMMICH_INSTANCE_URL', '').rstrip('/')
-    api_key = os.getenv('IMMICH_API_KEY', '')
+    base_url = os.getenv("IMMICH_INSTANCE_URL", "").rstrip("/")
+    api_key = os.getenv("IMMICH_API_KEY", "")
 
     if not base_url or not api_key:
         print("ERROR: Missing IMMICH_INSTANCE_URL or IMMICH_API_KEY", file=sys.stderr)

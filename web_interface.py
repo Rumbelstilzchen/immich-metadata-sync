@@ -80,13 +80,13 @@ def trigger_sync():
     cmd = ['python3', str(SYNC_SCRIPT), '--all']
     
     if dry_run:
-        cmd.append('--dry-run')
+        cmd.append('--dry_run')
     if only_new:
-        cmd.append('--only-new')
+        cmd.append('--only_new')
     if albums:
         cmd.append('--albums')
     if face_coordinates:
-        cmd.append('--face-coordinates')
+        cmd.append('--face_coordinates')
     
     try:
         sync_status['running'] = True

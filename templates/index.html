@@ -274,13 +274,13 @@
                 <h2>Sync Options</h2>
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" id="only-new" checked>
+                        <input type="checkbox" id="only_new" checked>
                         <span><strong>Only New:</strong> Skip files that already have metadata (recommended)</span>
                     </label>
                 </div>
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" id="dry-run">
+                        <input type="checkbox" id="dry_run">
                         <span><strong>Dry Run:</strong> Preview changes without writing to files</span>
                     </label>
                 </div>
@@ -292,7 +292,7 @@
                 </div>
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" id="face-coordinates">
+                        <input type="checkbox" id="face_coordinates">
                         <span><strong>Face Coordinates:</strong> Sync face bounding boxes (MWG-RS regions)</span>
                     </label>
                 </div>
@@ -379,10 +379,10 @@
         async function startSync() {
             const syncBtn = document.getElementById('sync-btn');
             const options = {
-                dry_run: document.getElementById('dry-run').checked,
-                only_new: document.getElementById('only-new').checked,
+                dry_run: document.getElementById('dry_run').checked,
+                only_new: document.getElementById('only_new').checked,
                 albums: document.getElementById('albums').checked,
-                face_coordinates: document.getElementById('face-coordinates').checked
+                face_coordinates: document.getElementById('face_coordinates').checked
             };
             
             syncBtn.disabled = true;

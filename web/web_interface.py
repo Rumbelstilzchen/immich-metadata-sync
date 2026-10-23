@@ -13,7 +13,6 @@ For production use, consider:
 
 import os
 import sys
-import json
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -21,6 +20,8 @@ from flask import Flask, render_template, request, jsonify
 
 # Add parent script directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'script'))
+
+from utils import load_config
 
 app = Flask(__name__, template_folder='templates')
 
@@ -55,6 +56,12 @@ def get_status():
     """Get current sync status."""
     return jsonify(sync_status)
 
+@app.route('/api/config')
+def get_config():
+    """Get current configuration."""
+    configuration = load_config()
+    return jsonify(configuration.get('CMD_PARAMETERS', {}))
+
 
 @app.route('/api/sync', methods=['POST'])
 def trigger_sync():
@@ -78,16 +85,11 @@ def trigger_sync():
     face_coordinates = data.get('face_coordinates', False)
 
     # Build command
-    cmd = ['python3', str(SYNC_SCRIPT), '--all']
+    cmd = ['python3', str(SYNC_SCRIPT)]
 
-    if dry_run:
-        cmd.append('--dry-run')
-    if only_new:
-        cmd.append('--only-new')
-    if albums:
-        cmd.append('--albums')
-    if face_coordinates:
-        cmd.append('--face-coordinates')
+    for key, value in data.items():
+        if isinstance(value, bool) and value:
+            cmd.append(f'--{key}')  # Remove 'arg_' prefix
 
     try:
         sync_status['running'] = True

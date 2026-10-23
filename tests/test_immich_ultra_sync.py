@@ -586,7 +586,7 @@ class FaceCoordinatesTests(ModuleLoaderMixin):
             ],
         }
 
-        args, changes = self.module.build_exif_args(asset, details, ["face-coordinates"])
+        args, changes = self.module.build_exif_args(asset, details, ["face_coordinates"])
 
         self.assertIn("FaceCoordinates", changes)
         self.assertIn("-struct", args)
@@ -636,7 +636,7 @@ class FaceCoordinatesTests(ModuleLoaderMixin):
             ],
         }
 
-        args, changes = self.module.build_exif_args(asset, details, ["face-coordinates"])
+        args, changes = self.module.build_exif_args(asset, details, ["face_coordinates"])
 
         self.assertIn("FaceCoordinates", changes)
         region_arg = next(a for a in args if a.startswith("-RegionInfo="))
@@ -654,7 +654,7 @@ class FaceCoordinatesTests(ModuleLoaderMixin):
             "people": [{"name": "Alice"}],  # No faces array
         }
 
-        args, changes = self.module.build_exif_args(asset, details, ["face-coordinates"])
+        args, changes = self.module.build_exif_args(asset, details, ["face_coordinates"])
         self.assertNotIn("FaceCoordinates", changes)
         self.assertEqual(args, [])
 
@@ -680,7 +680,7 @@ class FaceCoordinatesTests(ModuleLoaderMixin):
             ],
         }
 
-        args, changes = self.module.build_exif_args(asset, details, ["face-coordinates"])
+        args, changes = self.module.build_exif_args(asset, details, ["face_coordinates"])
         self.assertNotIn("FaceCoordinates", changes)
         self.assertEqual(args, [])
 
@@ -719,23 +719,23 @@ class FaceCoordinatesTests(ModuleLoaderMixin):
         self.assertLess(alice_pos, zoe_pos)
 
     def test_face_coordinates_cli_flag(self):
-        """Test that --face-coordinates flag is parsed correctly."""
-        parsed, modes = self.module.parse_cli_args(["--face-coordinates"])
+        """Test that --face_coordinates flag is parsed correctly."""
+        parsed, modes = self.module.parse_cli_args(["--face_coordinates"])
         self.assertTrue(parsed.face_coordinates)
-        self.assertIn("face-coordinates", modes)
+        self.assertIn("face_coordinates", modes)
 
     def test_face_coordinates_not_in_all(self):
-        """Test that --all does NOT include face-coordinates."""
+        """Test that --all does NOT include face_coordinates."""
         parsed, modes = self.module.parse_cli_args(["--all"])
-        self.assertNotIn("face-coordinates", modes)
+        self.assertNotIn("face_coordinates", modes)
 
     def test_all_with_face_coordinates_flag(self):
-        """Test --all combined with --face-coordinates."""
-        parsed, modes = self.module.parse_cli_args(["--all", "--face-coordinates"])
-        self.assertIn("face-coordinates", modes)
+        """Test --all combined with --face_coordinates."""
+        parsed, modes = self.module.parse_cli_args(["--all", "--face_coordinates"])
+        self.assertIn("face_coordinates", modes)
         self.assertEqual(
             set(modes),
-            {"people", "gps", "caption", "time", "rating", "face-coordinates"},
+            {"people", "gps", "caption", "time", "rating", "face_coordinates"},
         )
 
 

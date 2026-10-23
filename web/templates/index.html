@@ -274,32 +274,48 @@
                 <h2>Sync Options</h2>
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" id="only-new" checked>
-                        <span><strong>Only New:</strong> Skip files that already have metadata (recommended)</span>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="dry-run">
+                        <input type="checkbox" id="arg_dry_run">
                         <span><strong>Dry Run:</strong> Preview changes without writing to files</span>
                     </label>
-                </div>
-                <div class="form-group">
                     <label>
-                        <input type="checkbox" id="albums">
+                        <input type="checkbox" id="arg_only_new" checked>
+                        <span><strong>Only New:</strong> Skip files that already have metadata (recommended)</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="arg_albums">
                         <span><strong>Sync Albums:</strong> Write album information to XMP metadata</span>
                     </label>
-                </div>
-                <div class="form-group">
                     <label>
-                        <input type="checkbox" id="face-coordinates">
+                        <input type="checkbox" id="arg_people" checked>
+                        <span><strong>Sync People:</strong> Write person information to XMP metadata</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="arg_face_coordinates">
                         <span><strong>Face Coordinates:</strong> Sync face bounding boxes (MWG-RS regions)</span>
                     </label>
+                    <label>
+                        <input type="checkbox" id="arg_tags" checked>
+                        <span><strong>Sync Tags:</strong> Write tag information to XMP metadata</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="arg_caption" checked>
+                        <span><strong>Sync Descriptions:</strong> Write description information to XMP metadata</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="arg_rating" checked>
+                        <span><strong>Sync Rating:</strong> Write rating information to XMP metadata</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="arg_times" disabled>
+                        <span><strong>Sync Times:</strong> Write time information to XMP metadata (cannot be enabled - disable is hardcoded)</span>
+                    </label>
                 </div>
-                
                 <div class="button-group">
                     <button class="btn-primary" onclick="startSync()" id="sync-btn">
                         Start Sync
+                    </button>
+                    <button class="btn-primary" onclick="loadConfig()">
+                        Load Config
                     </button>
                     <button class="btn-secondary" onclick="refreshStatus()">
                         Refresh Status
@@ -330,7 +346,27 @@
                 alert.remove();
             }, 5000);
         }
-        
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                document.getElementById('arg_dry_run').checked = config.dry_run;
+                document.getElementById('arg_only_new').checked = config.only_new;
+                document.getElementById('arg_albums').checked = config.modes.albums;
+                document.getElementById('arg_people').checked = config.modes.people;
+                document.getElementById('arg_face_coordinates').checked = config.modes.face_coordinates;
+                document.getElementById('arg_tags').checked = config.modes.tags;
+                document.getElementById('arg_gps').checked = config.modes.gps;
+                document.getElementById('arg_caption').checked = config.modes.caption;
+                document.getElementById('arg_time').checked = config.modes.time;
+                document.getElementById('arg_rating').checked = config.modes.rating;
+            } catch (error) {
+                console.error('Error refreshing status:', error);
+                showAlert('Error refreshing status: ' + error.message, 'error');
+            }
+        }
+
         async function refreshStatus() {
             try {
                 const response = await fetch('/api/status');
@@ -379,10 +415,15 @@
         async function startSync() {
             const syncBtn = document.getElementById('sync-btn');
             const options = {
-                dry_run: document.getElementById('dry-run').checked,
-                only_new: document.getElementById('only-new').checked,
-                albums: document.getElementById('albums').checked,
-                face_coordinates: document.getElementById('face-coordinates').checked
+                dry_run: document.getElementById('arg_dry_run').checked,
+                only_new: document.getElementById('arg_only_new').checked,
+                albums: document.getElementById('arg_albums').checked,
+                people: document.getElementById('arg_people').checked,
+                face_coordinates: document.getElementById('arg_face_coordinates').checked,
+                tags: document.getElementById('arg_tags').checked,
+                descriptions: document.getElementById('arg_caption').checked,
+                time: document.getElementById('arg_time').checked,
+                rating: document.getElementById('arg_rating').checked
             };
             
             syncBtn.disabled = true;
@@ -416,7 +457,7 @@
                 syncBtn.textContent = 'Start Sync';
             }
         }
-        
+
         function startStatusPolling() {
             if (statusCheckInterval) {
                 clearInterval(statusCheckInterval);
@@ -425,7 +466,8 @@
                 await refreshStatus();
             }, 5000);
         }
-        
+
+        loadConfig();
         refreshStatus();
         startStatusPolling();
     </script>

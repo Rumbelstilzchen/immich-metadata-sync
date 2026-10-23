@@ -4,11 +4,12 @@ Probe endpoints to find the correct API entrypoint and check for 'rating' in ass
 Usage:
   IMMICH_INSTANCE_URL="http://your-immich:2283" IMMICH_API_KEY="key" python3 script/check_api_entrypoints.py
 """
+
+import json
 import os
 import sys
-import json
 import time
-from urllib import request, error
+from urllib import error, request
 
 BASE = os.getenv("IMMICH_INSTANCE_URL")
 API_KEY = os.getenv("IMMICH_API_KEY")
@@ -16,7 +17,12 @@ if not BASE or not API_KEY:
     print("Set IMMICH_INSTANCE_URL and IMMICH_API_KEY", file=sys.stderr)
     sys.exit(2)
 
-HEADERS = {"x-api-key": API_KEY, "Accept": "application/json", "Content-Type": "application/json"}
+HEADERS = {
+    "x-api-key": API_KEY,
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+}
+
 
 def try_get(path, timeout=10):
     url = BASE.rstrip("/") + path
@@ -30,6 +36,7 @@ def try_get(path, timeout=10):
     except Exception as e:
         return url, {"error": str(e)}
 
+
 def try_post(path, payload, timeout=15):
     url = BASE.rstrip("/") + path
     data = json.dumps(payload).encode("utf-8")
@@ -42,6 +49,7 @@ def try_post(path, payload, timeout=15):
         return url, {"http_error": e.code, "reason": e.reason}
     except Exception as e:
         return url, {"error": str(e)}
+
 
 def sample_from_list(data):
     if isinstance(data, list) and data:
@@ -60,6 +68,7 @@ def sample_from_list(data):
                 return items[0]
     return None
 
+
 # 1) Try search/metadata POST (server likely returns assets there)
 print("Trying POST /search/metadata with payload {'withArchived': True, 'size':5}")
 url, resp = try_post("/search/metadata", {"withArchived": True, "size": 5})
@@ -70,19 +79,28 @@ try:
     elif isinstance(resp, list):
         print(f"List response ({len(resp)} items).")
     else:
-        print("Top-level keys:", list(resp.keys()) if isinstance(resp, dict) else type(resp).__name__)
+        print(
+            "Top-level keys:",
+            list(resp.keys()) if isinstance(resp, dict) else type(resp).__name__,
+        )
 except Exception:
     print("Response not printable")
 
 sample = sample_from_list(resp)
 if sample:
     print("Sample asset from search/metadata:")
-    print(json.dumps({
-        "id": sample.get("id"),
-        "fileName": sample.get("fileName"),
-        "rating": sample.get("rating"),
-        "isFavorite": sample.get("isFavorite")
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "id": sample.get("id"),
+                "fileName": sample.get("fileName"),
+                "rating": sample.get("rating"),
+                "isFavorite": sample.get("isFavorite"),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 else:
     print("No asset sample found in search/metadata response.")
 
@@ -98,7 +116,10 @@ try:
     elif isinstance(resp, list):
         print(f"List response ({len(resp)} items).")
     else:
-        print("Top-level keys:", list(resp.keys()) if isinstance(resp, dict) else type(resp).__name__)
+        print(
+            "Top-level keys:",
+            list(resp.keys()) if isinstance(resp, dict) else type(resp).__name__,
+        )
 except Exception:
     print("Response not printable")
 
@@ -109,22 +130,30 @@ for p in ("/assets?limit=5", "/asset?limit=5", "/assets", "/asset"):
     print(f"\nTrying GET {p}")
     url, resp = try_get(p)
     print(f"-> {url}")
-    if isinstance(resp, dict) and ('http_error' in resp or 'error' in resp):
+    if isinstance(resp, dict) and ("http_error" in resp or "error" in resp):
         print(json.dumps(resp, indent=2))
         continue
     sample = sample_from_list(resp)
     if sample:
         print("Sample asset:")
-        print(json.dumps({
-            "id": sample.get("id"),
-            "fileName": sample.get("fileName"),
-            "rating": sample.get("rating"),
-            "isFavorite": sample.get("isFavorite")
-        }, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "id": sample.get("id"),
+                    "fileName": sample.get("fileName"),
+                    "rating": sample.get("rating"),
+                    "isFavorite": sample.get("isFavorite"),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
     else:
         if isinstance(resp, dict):
             print("Top-level keys:", list(resp.keys()))
         else:
             print("Response type:", type(resp).__name__)
 
-print("\nDone. If any sample shows a numeric 'rating' (0..5), the API returns star ratings.")
+print(
+    "\nDone. If any sample shows a numeric 'rating' (0..5), the API returns star ratings."
+)
