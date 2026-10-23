@@ -528,27 +528,28 @@ def main() -> None:
         log(f"Processing batch {batch_num+1} of {total_batches}", log_file, LogLevel.INFO)
         statistics["total"] += len(asset_batch)
 
-        filtered_batch = [
-            current_asset
-            for current_asset in asset_batch
-            if (
-                current_asset.get("updatedAt", last_runtime) >= last_runtime
-                or any(
-                    person.get("updatedAt", last_runtime) > last_runtime
-                    for person in current_asset.get("people", [])
+        if last_runtime is not None:
+            filtered_batch = [
+                current_asset
+                for current_asset in asset_batch
+                if (
+                    current_asset.get("updatedAt", last_runtime) >= last_runtime
+                    or any(
+                        person.get("updatedAt", last_runtime) > last_runtime
+                        for person in current_asset.get("people", [])
+                    )
                 )
-            )
-        ]
-        if (nr_filtered := len(asset_batch) - len(filtered_batch)) > 0:
-            log(
-                f"Filtered {nr_filtered} assets that have not changed since last run",
-                log_file,
-                LogLevel.DEBUG,
-            )
-            asset_batch = filtered_batch
-            statistics["skipped"] += nr_filtered
-            if progress:
-                progress.update(nr_filtered)
+            ]
+            if (nr_filtered := len(asset_batch) - len(filtered_batch)) > 0:
+                log(
+                    f"Filtered {nr_filtered} assets that have not changed since last run",
+                    log_file,
+                    LogLevel.DEBUG,
+                )
+                asset_batch = filtered_batch
+                statistics["skipped"] += nr_filtered
+                if progress:
+                    progress.update(nr_filtered)
         if not asset_batch:
             log(
                 f"No assets to process in batch {batch_num+1}/{total_batches}",
