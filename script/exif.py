@@ -1000,7 +1000,7 @@ def build_exif_args(
             and not t.get("value").startswith("Personen/")
             and not t.get("value").startswith("Albums/")
         ]
-        changes["Tags"] = None
+        changes["Tags"] = []
         if tags:
             # Sortiere Tags alphabetisch für konsistente Reihenfolge
             tags_sorted = sorted(tags)
