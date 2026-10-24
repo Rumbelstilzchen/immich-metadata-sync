@@ -366,7 +366,8 @@ def main() -> None:
     args, active_modes, config = parse_cli_args_and_config()
 
     # Set log level early
-    set_log_level(args.log_level)
+    set_log_level(os.getenv("IMMICH_LOGLEVEL") or config.get(
+        "IMMICH_LOGLEVEL", args.log_level))
 
     # Setup signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, signal_handler)
