@@ -224,7 +224,7 @@ def load_config(config_file: str | None = None) -> dict:
     """Load configuration from file."""
 
     if config_file is None:
-        config_file = os.path.realpath(DIR_CACHE_FILES, "immich-sync.yaml")
+        config_file = os.path.join(DIR_CACHE_FILES, "immich-sync.yaml")
 
     defaults = {
         "IMMICH_INSTANCE_URL": "",
