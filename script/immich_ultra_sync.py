@@ -28,10 +28,10 @@ from utils import (CHECKPOINT_FILE, DEFAULT_ALBUM_CACHE_MAX_STALE,
                    MAX_PAGE_SIZE, MAX_PATH_SEGMENTS, LogLevel,
                    _shutdown_requested, check_mount_issues, clear_album_cache,
                    export_statistics, get_env_int, load_album_cache,
-                   load_checkpoint, load_config, load_last_successfull_run,
+                   load_checkpoint, load_config, load_last_successful_run,
                    load_stale_album_cache, log, normalize_caption_limit,
                    sanitize_path, save_album_cache, save_checkpoint,
-                   save_last_successfull_run, set_log_level, signal_handler,
+                   save_last_successful_run, set_log_level, signal_handler,
                    validate_path_in_boundary, validate_photo_directory)
 
 # ==============================================================================
@@ -490,7 +490,7 @@ def main() -> None:
     )
     if current_runtime is None:
         current_runtime = datetime.now(timezone.utc).isoformat()
-    last_runtime = load_last_successfull_run(log_file)
+    last_runtime = load_last_successful_run(log_file)
 
     statistics = {
         "total": 0,
@@ -641,7 +641,7 @@ def main() -> None:
         extra={"statistics": statistics},
     )
     if not dry_run:
-        save_last_successfull_run(current_runtime, log_file)
+        save_last_successful_run(current_runtime, log_file)
 
     # Export statistics if requested
     if args.export_stats:

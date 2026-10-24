@@ -51,10 +51,11 @@ MIN_CAPTION_MAX_LEN = 1
 GPS_COORDINATE_PRECISION = 6  # Decimal places ≈11cm precision, sufficient for photos
 GPS_ALTITUDE_PRECISION = 1  # Decimal places ≈10cm precision
 MWGRS_COORDINATE_PRECISION = 6  # Decimal places for MWG-RS normalized coordinates (0-1)
-CHECKPOINT_FILE = ".immich_sync_checkpoint.pkl"
-ALBUM_CACHE_FILE = ".immich_album_cache.json"
-ALBUM_CACHE_LOCK_FILE = ".immich_album_cache.lock"
-LAST_SUCCESSFULL_RUN = ".immich_last_successful_run.json"
+DIR_CACHE_FILES = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "config"))
+CHECKPOINT_FILE = "immich_sync_checkpoint.pkl"
+ALBUM_CACHE_FILE = "immich_album_cache.json"
+ALBUM_CACHE_LOCK_FILE = "immich_album_cache.lock"
+LAST_SUCCESSFUL_RUN = "immich_last_successful_run.json"
 DEFAULT_ALBUM_CACHE_MAX_STALE = 604800  # 7 days
 
 
@@ -223,9 +224,7 @@ def load_config(config_file: str | None = None) -> dict:
     """Load configuration from file."""
 
     if config_file is None:
-        config_file = os.path.realpath(os.path.join(
-            os.path.dirname(__file__), "..", "config", "immich-sync.yaml"
-        ))
+        config_file = os.path.realpath(DIR_CACHE_FILES, "immich-sync.yaml")
 
     defaults = {
         "IMMICH_INSTANCE_URL": "",
@@ -393,17 +392,17 @@ def chunked(iterable: Iterable[Any], size: int) -> Iterable[List[Any]]:
 
 def get_album_cache_path() -> str:
     """Return the path to the album cache file."""
-    return ALBUM_CACHE_FILE
+    return os.path.join(DIR_CACHE_FILES, ALBUM_CACHE_FILE)
 
 
 def get_album_cache_lock_path() -> str:
     """Return the path to the album cache lock file."""
-    return ALBUM_CACHE_LOCK_FILE
+    return os.path.join(DIR_CACHE_FILES, ALBUM_CACHE_LOCK_FILE)
 
 
-def get_last_successfull_run_path() -> str:
+def get_last_successful_run_path() -> str:
     """Return the path to the last successful run file."""
-    return LAST_SUCCESSFULL_RUN
+    return os.path.join(DIR_CACHE_FILES, LAST_SUCCESSFUL_RUN)
 
 
 def acquire_lock(lock_file_path: str, timeout: float = 10.0) -> Optional[IO]:
@@ -458,12 +457,12 @@ def release_lock(lock_handle: Optional[IO]) -> None:
         pass
 
 
-def load_last_successfull_run(log_file: str) -> str | None:
+def load_last_successful_run(log_file: str) -> str | None:
     """
     Load the last successful run timestamp from disk.
     Returns None if the file doesn't exist or can't be loaded.
     """
-    cache_path = get_last_successfull_run_path()
+    cache_path = get_last_successful_run_path()
     if not os.path.exists(cache_path):
         return None
     try:
@@ -571,12 +570,12 @@ def load_stale_album_cache(
         release_lock(lock_handle)
 
 
-def save_last_successfull_run(timestamp: str | None, log_file: str) -> bool:
+def save_last_successful_run(timestamp: str | None, log_file: str) -> bool:
     """
     Save the last successful run timestamp to disk atomically with locking.
     Returns True on success, False on failure.
     """
-    cache_path = get_last_successfull_run_path()
+    cache_path = get_last_successful_run_path()
     if timestamp is None:
         log(
             "No timestamp provided to save last successful run",
