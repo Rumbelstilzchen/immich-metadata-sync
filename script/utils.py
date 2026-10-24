@@ -573,7 +573,7 @@ def load_stale_album_cache(
 
 def save_last_successfull_run(timestamp: str | None, log_file: str) -> bool:
     """
-    Save the album cache to disk atomically with locking.
+    Save the last successful run timestamp to disk atomically with locking.
     Returns True on success, False on failure.
     """
     cache_path = get_last_successfull_run_path()
@@ -607,10 +607,10 @@ def save_last_successfull_run(timestamp: str | None, log_file: str) -> bool:
         # Atomic replace
         os.replace(tmp_path, cache_path)
 
-        log(f"Saved album cache to disk", log_file, LogLevel.INFO)
+        log(f"Saved last successful run date: {timestamp}", log_file, LogLevel.INFO)
         return True
     except Exception as e:
-        log(f"Failed to save album cache: {e}", log_file, LogLevel.ERROR)
+        log(f"Failed to save last successful run date: {e}", log_file, LogLevel.ERROR)
         return False
 
 

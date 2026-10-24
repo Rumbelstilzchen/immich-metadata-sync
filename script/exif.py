@@ -405,7 +405,7 @@ def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str
                             )
                         )
                     else:
-                        output[category] = None
+                        output[category] = []
                     continue
                 if category in ["GPS", "Rating"]:
                     if category not in output:
@@ -432,8 +432,10 @@ def get_current_exif_values(full_path: str, active_modes: List[str]) -> Dict[str
                                 ]
                             )
                         )
-                    if isinstance(value, str):
+                    elif isinstance(value, str):
                         values.append([value.replace("|", "/").split("|")[-1]])
+                    else:
+                        output[category] = []
                     continue
             if category not in output:
                 if values and all(v == values[0] for v in values):
@@ -787,7 +789,7 @@ def build_exif_args(
 
     # 1. PEOPLE SYNC (face recognition)
     if "people" in active_modes:
-        changes["People"] = None
+        changes["People"] = []
         people = [p["name"] for p in details.get("people", []) if p.get("name")]
         if people:
             # Sortiere Namen alphabetisch für konsistente Reihenfolge
@@ -919,7 +921,7 @@ def build_exif_args(
 
     # 6. ALBUM SYNC (new section after rating)
     if "albums" in active_modes:
-        changes["Albums"] = None
+        changes["Albums"] = []
         if album_map:
             album_names = sorted(
                 [name for name, _ in album_map.get(asset.get("id", ""), [])]
