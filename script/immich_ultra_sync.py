@@ -145,9 +145,9 @@ def process_asset(
     for category, desired in change_list.items():
         # For comparison, try both full tag name and short name (without namespace)
 
-        if desired != current_values.get(category):
+        if (current_val:=current_values.get(category)) != desired:
             # DEBUG: Uncomment for troubleshooting
-            # log(f"DEBUG {clean_rel}: Tag={tag} | Current='{normalized_current}' | Desired='{normalized_desired}'", log_file, LogLevel.DEBUG)
+            log(f"DEBUG Tag={category} | Current='{current_val}' | Desired='{desired}'", log_file, LogLevel.DEBUG)
             fields_to_update.append(category)
 
     # Skip if no updates needed (applies to both modes)
