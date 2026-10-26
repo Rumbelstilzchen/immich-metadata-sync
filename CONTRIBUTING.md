@@ -75,7 +75,7 @@ Enhancement suggestions are welcome! Please provide:
 To run the sync script locally:
 
 ```bash
-python3 script/immich_ultra_sync.py --all --dry-run
+python3 script/immich_ultra_sync.py --all --dry_run
 ```
 
 Make sure to set up your environment variables or configuration file with valid Immich credentials.

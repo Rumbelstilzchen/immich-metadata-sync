@@ -12,7 +12,7 @@ Version 1.2.0 introduces **face coordinate synchronization** using the MWG-RS (M
 ### ✨ Key Features
 
 #### 1. MWG-RS Region Writing
-The `--face-coordinates` flag enables writing face regions to XMP metadata:
+The `--face_coordinates` flag enables writing face regions to XMP metadata:
 - Each detected face is stored as a region with `Type=Face` and `Name=<person name>`
 - Pixel bounding boxes (X1/Y1/X2/Y2) are converted to normalized MWG-RS coordinates
 - Image dimensions are stored in `AppliedToDimensions` for reference
@@ -31,7 +31,7 @@ The change detection system has been extended:
 - Only updates when regions actually differ (reduces unnecessary writes)
 
 #### 4. Opt-in Design
-- `--face-coordinates` is completely opt-in and NOT included in `--all`
+- `--face_coordinates` is completely opt-in and NOT included in `--all`
 - Can be combined with any other sync mode
 - Unnamed persons are automatically skipped
 
@@ -39,18 +39,18 @@ The change detection system has been extended:
 
 ```bash
 # Sync people names and face coordinates
-python3 immich_ultra_sync.py --people --face-coordinates
+python3 immich_ultra_sync.py --people --face_coordinates
 
 # Sync all metadata plus face coordinates
-python3 immich_ultra_sync.py --all --face-coordinates
+python3 immich_ultra_sync.py --all --face_coordinates
 
-# Preview what would be synced (dry-run)
-python3 immich_ultra_sync.py --all --face-coordinates --dry-run --only-new
+# Preview what would be synced (dry_run)
+python3 immich_ultra_sync.py --all --face_coordinates --dry_run --only_new
 ```
 
 ### 📝 MWG-RS Example Output
 
-After running with `--face-coordinates`, ExifTool shows:
+After running with `--face_coordinates`, ExifTool shows:
 ```
 Region Info:
   Applied To Dimensions: W=4000, H=3000, Unit=pixel
@@ -85,8 +85,8 @@ Region Info:
 - **`build_exif_args()`**: New section #7 for face coordinate region generation
 - **`get_current_exif_values()`**: Reads `RegionInfo` structs, handles dict values
 - **`normalize_exif_value()`**: Canonical region comparison with sorted names and rounded coordinates
-- **`create_arg_parser()`**: New `--face-coordinates` CLI flag
-- **`parse_cli_args()`**: Adds `face-coordinates` mode when flag is set
+- **`create_arg_parser()`**: New `--face_coordinates` CLI flag
+- **`parse_cli_args()`**: Adds `face_coordinates` mode when flag is set
 
 #### New Constants
 - `MWGRS_COORDINATE_PRECISION = 6` - Decimal places for writing region coordinates
@@ -105,13 +105,13 @@ Region Info:
 
 ✅ **Fully backwards compatible**
 - All existing features work as before
-- `--face-coordinates` is entirely opt-in
+- `--face_coordinates` is entirely opt-in
 - All existing tests pass
 - No new dependencies required
 
 ### 💡 Upgrade Notes
 
-No special upgrade steps required. Simply update to v1.2.0 and use `--face-coordinates` to enable face coordinate sync.
+No special upgrade steps required. Simply update to v1.2.0 and use `--face_coordinates` to enable face coordinate sync.
 
 ### 🔗 Links
 

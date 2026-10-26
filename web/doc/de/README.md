@@ -29,7 +29,7 @@ Die Weboberfläche kapselt das CLI-Skript in einer leichtgewichtigen
 [Flask](https://flask.palletsprojects.com/)-Anwendung und bietet:
 
 - ✅ Visuelles Status-Monitoring
-- ✅ Sync per Klick mit konfigurierbaren Optionen (Dry-Run, Only-New, Alben, Gesichtskoordinaten)
+- ✅ Sync per Klick mit konfigurierbaren Optionen (dry_run, only_new, Alben, Gesichtskoordinaten)
 - ✅ Echtzeit-Log-Anzeige
 - ✅ REST-API (`/api/status`, `/api/sync`, `/api/logs`, `/health`)
 

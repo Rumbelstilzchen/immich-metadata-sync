@@ -12,7 +12,7 @@ Version 1.0.0 introduces **intelligent change detection** that dramatically impr
 ### ✨ Key Features
 
 #### 1. Smart Change Detection
-The `--only-new` flag now works across **all sync modes**, not just ratings:
+The `--only_new` flag now works across **all sync modes**, not just ratings:
 - **People Detection**: Compares XMP:Subject and IPTC:Keywords
 - **GPS Data**: Compares Latitude, Longitude, and Altitude
 - **Captions**: Compares XMP:Description and IPTC:Caption-Abstract
@@ -43,13 +43,13 @@ On repeat synchronizations:
 
 ```bash
 # Basic usage with change detection
-python3 immich_ultra_sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only_new
 
 # Sync only specific metadata with change detection
-python3 immich_ultra_sync.py --people --gps --only-new
+python3 immich_ultra_sync.py --people --gps --only_new
 
 # Dry run to see what would change
-python3 immich_ultra_sync.py --all --only-new --dry-run
+python3 immich_ultra_sync.py --all --only_new --dry_run
 ```
 
 ### 📝 Example Output
@@ -108,9 +108,9 @@ python3 immich_ultra_sync.py --all --only-new --dry-run
 
 ✅ **Fully backwards compatible**
 - All existing features work as before
-- `--only-new` flag enhanced but not breaking
+- `--only_new` flag enhanced but not breaking
 - All existing tests pass
-- Default behavior unchanged (no change detection unless `--only-new` is used)
+- Default behavior unchanged (no change detection unless `--only_new` is used)
 
 ### 🐛 Bug Fixes
 
@@ -120,7 +120,7 @@ python3 immich_ultra_sync.py --all --only-new --dry-run
 
 ### 💡 Upgrade Notes
 
-No special upgrade steps required. Simply update to v1.0.0 and start using `--only-new` with any sync mode to benefit from change detection.
+No special upgrade steps required. Simply update to v1.0.0 and start using `--only_new` with any sync mode to benefit from change detection.
 
 ### 🙏 Credits
 

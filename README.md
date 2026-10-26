@@ -48,7 +48,7 @@ It extracts metadata from the [Immich API](https://api.docs.immich.app) and uses
     - [Time](#time)
     - [Rating & Favorites](#rating--favorites)
     - [Album Synchronization](#album-synchronization)
-    - [Face Coordinates (MWG-RS)](#face-coordinates-mwg-rs)
+    - [Face Coordinates (MWG-RS)](#face_coordinates-mwg-rs)
 - [Backup](#backup)
 - [Documentation](#documentation)
 - [Troubleshooting](#troubleshooting)
@@ -66,9 +66,9 @@ It extracts metadata from the [Immich API](https://api.docs.immich.app) and uses
 - **Rating** → `XMP:Rating`, `MicrosoftPhoto:Rating`, `Rating`, `RatingPercent` (star rating 0–5)
 - **Favorite** → `XMP:Label` (`Favorite`) — tracked independently from star rating
 - **Albums** → `XMP-iptcExt:Event`, `XMP:HierarchicalSubject` and `EXIF:UserComment` → Windows "Kommentare" (when `--albums` flag is used)
-- **Face Coordinates** → `RegionInfo` (MWG-RS XMP regions with bounding boxes, when `--face-coordinates` flag is used)
+- **Face Coordinates** → `RegionInfo` (MWG-RS XMP regions with bounding boxes, when `--face_coordinates` flag is used)
 
-The `--only-new` mode compares desired EXIF values with what is already on disk and skips files with no changes to reduce disk I/O.
+The `--only_new` mode compares desired EXIF values with what is already on disk and skips files with no changes to reduce disk I/O.
 
 ## Requirements
 
@@ -179,7 +179,7 @@ German documentation: [web/doc/de/README.md](web/doc/de/README.md)
 2. Mount your Immich library into the container at `/library` (or set `PHOTO_DIR`).  
 3. Run the sync:  
    ```bash
-   python3 script/immich_ultra_sync.py --all --only-new
+   python3 script/immich_ultra_sync.py --all --only_new
    ```
 4. Trigger an "Offline Assets Scan" in Immich to re-index updated files.
 
@@ -269,11 +269,11 @@ python3 immich_ultra_sync.py --all --albums
 # Sync only people and albums
 python3 immich_ultra_sync.py --people --albums
 
-# Preview what would be synced (dry-run)
-python3 immich_ultra_sync.py --all --albums --dry-run --only-new
+# Preview what would be synced (dry_run)
+python3 immich_ultra_sync.py --all --albums --dry_run --only_new
 
 # Sync people names and face coordinates
-python3 immich_ultra_sync.py --people --face-coordinates
+python3 immich_ultra_sync.py --people --face_coordinates
 
 # Resume from previous run
 python3 immich_ultra_sync.py --all --resume
@@ -285,18 +285,18 @@ python3 immich_ultra_sync.py --all --export-stats json
 Common flags:
 - `--all` - Enable all modules (`people`, `gps`, `caption`, `time`, `rating`)
 - `--albums` - Sync album information to XMP metadata (opt-in, not included in `--all`)
-- `--face-coordinates` - Sync face bounding boxes as MWG-RS regions to XMP (opt-in, not included in `--all`)
-- `--dry-run` - Preview without writing
-- `--only-new` - Skip files that already have up-to-date metadata (no changes detected)
+- `--face_coordinates` - Sync face bounding boxes as MWG-RS regions to XMP (opt-in, not included in `--all`)
+- `--dry_run` - Preview without writing
+- `--only_new` - Skip files that already have up-to-date metadata (no changes detected)
 - `--resume` / `--clear-checkpoint` - Continue or reset progress
 - `--clear-album-cache` - Clear the album cache before running (forces fresh fetch from API)
 - `--export-stats json|csv` - Capture run statistics
 - `--log-level {DEBUG,INFO,WARNING,ERROR}` - Set logging verbosity
 
 
-### Understanding `--only-new`
+### Understanding `--only_new`
 
-The `--only-new` flag enables **change detection** to reduce unnecessary disk writes:
+The `--only_new` flag enables **change detection** to reduce unnecessary disk writes:
 
 **How it works:**
 1. Reads current EXIF/XMP values from the file
@@ -314,7 +314,7 @@ The `--only-new` flag enables **change detection** to reduce unnecessary disk wr
 python3 immich_ultra_sync.py --all
 
 # Subsequent syncs (only changed files)
-python3 immich_ultra_sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only_new
 
 ---
 
@@ -330,14 +330,14 @@ Syncing detected people writes person names (when available) into several metada
 **Command-line flags (relevant):**
 - `--people`  
   Enable syncing of person names and canonical person metadata (included in `--all`).
-- `--only-new` / `--dry-run`  
+- `--only_new` / `--dry_run`  
   (General flags) Preview or skip files without metadata changes.
 - `--resume` / `--clear-checkpoint`  
   (General flags) Continue or reset progress between runs.
 
 **Notes:**
 - Person names are taken from Immich's person database. Unnamed detections are skipped when writing names.
-- Combining `--people` with `--face-coordinates` will write both names and region boxes (region names come from `--people`).
+- Combining `--people` with `--face_coordinates` will write both names and region boxes (region names come from `--people`).
 
 **Examples:**
 ```bash
@@ -345,7 +345,7 @@ Syncing detected people writes person names (when available) into several metada
 python3 immich_ultra_sync.py --people
 
 # Preview what would change (no writes)
-python3 immich_ultra_sync.py --people --dry-run --only-new
+python3 immich_ultra_sync.py --people --dry_run --only_new
 ```
 
 
@@ -363,7 +363,7 @@ GPS coordinates from Immich are written back into standard EXIF GPS tags so maps
 **Command-line flags (relevant):**
 - `--gps`  
   Enable syncing of GPS coordinates (included in `--all`).
-- `--only-new` / `--dry-run`  
+- `--only_new` / `--dry_run`  
   (General flags) Preview or skip files without metadata changes.
 
 **Notes:**
@@ -376,7 +376,7 @@ GPS coordinates from Immich are written back into standard EXIF GPS tags so maps
 python3 immich_ultra_sync.py --gps
 
 # Sync GPS coordinates but do not write files (dry run)
-python3 immich_ultra_sync.py --gps --dry-run
+python3 immich_ultra_sync.py --gps --dry_run
 ```
 
 
@@ -391,7 +391,7 @@ Captions and descriptions from Immich are synced into IPTC/XMP caption fields.
 **Command-line flags (relevant):**
 - `--caption`  
   Enable syncing of captions/descriptions (included in `--all`).
-- `--only-new` / `--dry-run`  
+- `--only_new` / `--dry_run`  
   (General flags) Preview or skip files without metadata changes.
 
 **Environment variables:**
@@ -407,7 +407,7 @@ Captions and descriptions from Immich are synced into IPTC/XMP caption fields.
 python3 immich_ultra_sync.py --caption
 
 # Preview caption changes only
-python3 immich_ultra_sync.py --caption --dry-run --only-new
+python3 immich_ultra_sync.py --caption --dry_run --only_new
 ```
 
 
@@ -447,7 +447,7 @@ This module syncs capture timestamps from Immich into standard EXIF/XMP date fie
 **Command-line flags (relevant):**
 - `--time`  
   Enable syncing of time/date metadata (included in `--all`).
-- `--only-new` / `--dry-run`  
+- `--only_new` / `--dry_run`  
   (General flags) Preview or skip files without metadata changes.
 
 **Environment variables:**
@@ -455,7 +455,7 @@ This module syncs capture timestamps from Immich into standard EXIF/XMP date fie
 
 **Notes / Cautions:**
 - Timezone handling: EXIF fields are written without timezone information (`YYYY:MM:DD HH:MM:SS`). QuickTime and File fields use ISO 8601 format which may include timezone if available.
-- Changing file EXIF timestamps can affect sorting in photo apps and may trigger re-indexing. Use `--dry-run` first to preview changes.
+- Changing file EXIF timestamps can affect sorting in photo apps and may trigger re-indexing. Use `--dry_run` first to preview changes.
 - The tool logs which date source was selected for each asset (at DEBUG level).
 
 **Examples:**
@@ -464,7 +464,7 @@ This module syncs capture timestamps from Immich into standard EXIF/XMP date fie
 python3 immich_ultra_sync.py --time
 
 # Preview timestamp updates
-python3 immich_ultra_sync.py --time --dry-run --only-new
+python3 immich_ultra_sync.py --time --dry_run --only_new
 ```
 
 
@@ -506,7 +506,7 @@ Star ratings and favorites are now tracked **independently** in the file metadat
 **Command-line flags (relevant):**
 - `--rating`  
   Enable syncing of favorites/ratings (included in `--all`).
-- `--only-new` / `--dry-run`  
+- `--only_new` / `--dry_run`  
   (General flags) Preview or skip files without metadata changes.
 
 **Notes:**
@@ -520,10 +520,10 @@ Star ratings and favorites are now tracked **independently** in the file metadat
 python3 immich_ultra_sync.py --rating
 
 # Preview rating updates only
-python3 immich_ultra_sync.py --rating --dry-run --only-new
+python3 immich_ultra_sync.py --rating --dry_run --only_new
 ```
 
-General reminder: the `--all` flag enables the core modules (`people`, `gps`, `caption`, `time`, `rating`) for convenience, but opt-in features such as `--albums` and `--face-coordinates` must be enabled explicitly.
+General reminder: the `--all` flag enables the core modules (`people`, `gps`, `caption`, `time`, `rating`) for convenience, but opt-in features such as `--albums` and `--face_coordinates` must be enabled explicitly.
 
 
 ## Album Synchronization
@@ -559,7 +559,7 @@ python3 immich_ultra_sync.py --all --albums --clear-album-cache
 
 ## Face Coordinates (MWG-RS)
 
-The `--face-coordinates` flag enables syncing of Immich face detection bounding boxes into XMP metadata as MWG-RS (Metadata Working Group Region Structure) regions. This allows tools like Lightroom, digiKam, and other MWG-RS-aware applications to display face regions.
+The `--face_coordinates` flag enables syncing of Immich face detection bounding boxes into XMP metadata as MWG-RS (Metadata Working Group Region Structure) regions. This allows tools like Lightroom, digiKam, and other MWG-RS-aware applications to display face regions.
 
 **How it works:**
 - Immich provides pixel bounding boxes (X1/Y1/X2/Y2) and image dimensions for each detected face
@@ -567,7 +567,7 @@ The `--face-coordinates` flag enables syncing of Immich face detection bounding 
 - Each region is written with `Type=Face` and `Name=<person name>`
 
 **Notes:**
-- `--face-coordinates` is opt-in and not included in `--all`
+- `--face_coordinates` is opt-in and not included in `--all`
 - Requires Immich API to return face bounding box data in the asset details (available in recent Immich versions)
 - Unnamed persons are skipped
 
@@ -639,16 +639,16 @@ See `script/backup/BACKUP_SETUP.md` for detailed setup instructions.
 - Example: For path `library/user/2024/photo.jpg` with `IMMICH_PHOTO_DIR=/library`, set `IMMICH_PATH_SEGMENTS=3`
 
 **Performance issues:**
-- Use `--only-new` to skip already-synced files
+- Use `--only_new` to skip already-synced files
 - Enable album cache to reduce API calls
 - Adjust batch size via `IMMICH_ASSET_BATCH_SIZE`
 
-**`--only-new` skips files that should be updated:**
+**`--only_new` skips files that should be updated:**
 - **Symptom:** Files with changed metadata (e.g., new ratings in Immich) are skipped
-- **Cause:** Bug in versions < 1.6 where `--only-new` skipped all files with any metadata
+- **Cause:** Bug in versions < 1.6 where `--only_new` skipped all files with any metadata
 - **Solution:** 
-  - Upgrade to v1.6+ or run without `--only-new` flag
-  - Use `--dry-run` to preview which files would be updated
+  - Upgrade to v1.6+ or run without `--only_new` flag
+  - Use `--dry_run` to preview which files would be updated
 
 **XMP:Favorite is not supported:**
 - **Issue:** ExifTool 13.25 does not recognize the `XMP:Favorite` tag as a standard XMP field
@@ -694,7 +694,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 - ExifTool stay-open mode and rate limiting keep performance high while avoiding API overload
 - Logs are written to `immich_ultra_sync.txt` in the script directory
-- Use `--only-new` for repeat runs to minimize disk writes
+- Use `--only_new` for repeat runs to minimize disk writes
 - The codebase follows modular design for easier maintenance and testing
 
 ## Contributing

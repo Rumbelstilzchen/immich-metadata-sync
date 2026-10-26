@@ -46,4 +46,4 @@ jobs:
     # - name: Test the built image
       # run: |
         # docker run --rm ${{ steps.meta.outputs.tags }} python --version  # Beispiel: Prüfe Python
-        # Hier könntest du erweitern: z. B. docker run mit --dry-run, aber ohne Volumes ist es limitiert
+        # Hier könntest du erweitern: z. B. docker run mit --dry_run, aber ohne Volumes ist es limitiert

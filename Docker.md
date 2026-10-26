@@ -45,7 +45,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD python --version || exit 1
 
 # Standard-Command: Starte das Script mit Default-Args (Simulation)
-# CMD ["python", "/app/immich-ultra-sync.py", "--all", "--dry-run"]
+# CMD ["python", "/app/immich-ultra-sync.py", "--all", "--dry_run"]
 
 # Standard-Command: Starte das Script mit Default-Args
 CMD ["python", "/app/immich-ultra-sync.py", "--all"]
@@ -57,4 +57,4 @@ CMD ["python", "/app/immich-ultra-sync.py", "--all"]
 - **Abhängigkeiten:** Installiert requests und tqdm für HTTP-Anfragen und Fortschrittsbalken. ExifTool wird für Metadaten-Handling benötigt.
 - **Healthcheck:** Prüft die Python-Verfügbarkeit; könnte erweitert werden, um das Script zu testen.
 - **CMD:** Startet das Python-Script mit --all Flag, was wahrscheinlich alle Medien synchronisiert.
-- **Potenzielle Verbesserungen:** Der Healthcheck ist grundlegend; für Produktion könnte ein echter Endpoint hinzugefügt werden. Der kommentierte --dry-run CMD ist für Tests nützlich.
+- **Potenzielle Verbesserungen:** Der Healthcheck ist grundlegend; für Produktion könnte ein echter Endpoint hinzugefügt werden. Der kommentierte --dry_run CMD ist für Tests nützlich.

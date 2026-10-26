@@ -31,7 +31,7 @@ script/
      - `IMMICH_API_KEY`  
      - `IMMICH_PHOTO_DIR` (Standard `/library`, interner Mount mit Fotos)  
      - `IMMICH_LOG_FORMAT=json` oder `IMMICH_STRUCTURED_LOGS=true` für strukturierte JSON-Logs  
-   - CLI-Flags: `--all`, `--people`, `--gps`, `--caption`, `--time`, `--rating`, `--albums`, `--face-coordinates`, `--dry-run`, `--only-new`, `--resume`, `--clear-checkpoint`, `--clear-album-cache`, `--log-level`, `--help`.
+   - CLI-Flags: `--all`, `--people`, `--gps`, `--caption`, `--time`, `--rating`, `--albums`, `--face_coordinates`, `--dry_run`, `--only_new`, `--resume`, `--clear-checkpoint`, `--clear-album-cache`, `--log-level`, `--help`.
 
 2. **Asset-Ermittlung** (`api.py`)  
    - POST `/{api}/search/metadata` liefert Asset-Liste.  
@@ -54,9 +54,9 @@ script/
 
 5. **Ausführung** (`exif.py` - `ExifToolHelper`)  
    - ExifTool im stay-open Modus für bessere Performance
-   - `--dry-run`: Nur Logging, kein Schreiben.  
+   - `--dry_run`: Nur Logging, kein Schreiben.  
    - Regulär: `exiftool -overwrite_original <args> <file>`  
-   - `--only-new`: Prüft vorhandene EXIF-Werte und überspringt unveränderte Dateien
+   - `--only_new`: Prüft vorhandene EXIF-Werte und überspringt unveränderte Dateien
 
 6. **Logging** (`utils.py`)  
    - Datei: `immich_ultra_sync.txt` im Skript-Verzeichnis.  
@@ -89,19 +89,19 @@ Das Projekt verfügt nun über automatisierte Tests und CI/CD:
   ```
 - People + GPS, nur neue Ratings:  
   ```bash
-  python3 immich_ultra_sync.py --people --gps --only-new
+  python3 immich_ultra_sync.py --people --gps --only_new
   ```
 - Trockenlauf:  
   ```bash
-  python3 immich_ultra_sync.py --all --dry-run
+  python3 immich_ultra_sync.py --all --dry_run
   ```
 - Personen mit Gesichtskoordinaten:  
   ```bash
-  python3 immich_ultra_sync.py --people --face-coordinates
+  python3 immich_ultra_sync.py --people --face_coordinates
   ```
 - Alles inkl. Alben und Gesichtskoordinaten:  
   ```bash
-  python3 immich_ultra_sync.py --all --albums --face-coordinates
+  python3 immich_ultra_sync.py --all --albums --face_coordinates
   ```
 
 ## Fehlersuche
@@ -119,10 +119,10 @@ Das Projekt verfügt nun über automatisierte Tests und CI/CD:
   - Setze `IMMICH_PATH_SEGMENTS` auf die Anzahl der Pfadkomponenten nach deinem Mount-Point
   - Beispiel: Für Pfad `library/user/2024/photo.jpg` mit `IMMICH_PHOTO_DIR=/library`, setze `IMMICH_PATH_SEGMENTS=3`
 - **Keine People/GPS**: Immich-Asset hat evtl. keine erkannten Personen oder GPS-Daten; `change_list` bleibt leer → Datei wird übersprungen.  
-- **Langsame Läufe**: Nutze `--only-new` (wenn Rating aktiviert) oder `--dry-run` zum Testen.
+- **Langsame Läufe**: Nutze `--only_new` (wenn Rating aktiviert) oder `--dry_run` zum Testen.
 
 ## Sicherheit & Best Practices
-- `--dry-run` für Tests nutzen.  
+- `--dry_run` für Tests nutzen.  
 - `-overwrite_original` verhindert Backup-Dateien.  
 - Timeout/Fehlertoleranz bei API-Calls; Script bricht nicht bei Einzel-Fehlern ab.  
 - Rating-Check minimiert unnötige Schreibzugriffe.
@@ -136,7 +136,7 @@ Das Projekt verfügt nun über automatisierte Tests und CI/CD:
 - **Konfiguration & Logging**: `.env`/JSON-Config-Support und optionale strukturierte JSON-Logs mit Metriken
 - Robustere API-Aufrufe mit Fallback `/api`.  
 - Module: People, GPS, Caption, Time, Rating, Albums, Face Coordinates (MWG-RS).  
-- Smart-Skip für alle Metadaten (`--only-new`).  
+- Smart-Skip für alle Metadaten (`--only_new`).  
 - Logging erweitert (Start/Finish, Pfade, Fehler, konfigurierbare Log-Level).  
-- Gesichtserkennungs-Koordinaten als MWG-RS-Regionen (opt-in via `--face-coordinates`).  
+- Gesichtserkennungs-Koordinaten als MWG-RS-Regionen (opt-in via `--face_coordinates`).  
 - Album-Sync mit persistentem Cache und TTL.

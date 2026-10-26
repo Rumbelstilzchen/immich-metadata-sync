@@ -78,7 +78,7 @@ ls -la /library
 ### C. Synchronisation starten
 Trockenlauf:
 ```bash
-python3 immich_ultra_sync.py --all --dry-run
+python3 immich_ultra_sync.py --all --dry_run
 ```
 
 Vollständiger Lauf:
@@ -88,7 +88,7 @@ python3 immich_ultra_sync.py --all
 
 Nur neue/ungetaggte Bilder (empfohlen):
 ```bash
-python3 immich_ultra_sync.py --all --only-new
+python3 immich_ultra_sync.py --all --only_new
 ```
 
 ## ⚠️ Wichtige Hinweise

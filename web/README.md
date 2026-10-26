@@ -30,7 +30,7 @@ The web interface wraps the CLI script in a lightweight [Flask](https://flask.pa
 application that provides:
 
 - ✅ Visual status monitoring
-- ✅ One-click sync with configurable options (dry-run, only-new, albums, face-coordinates)
+- ✅ One-click sync with configurable options (dry_run, only_new, albums, face_coordinates)
 - ✅ Real-time log viewing
 - ✅ REST API (`/api/status`, `/api/sync`, `/api/logs`, `/health`)
 

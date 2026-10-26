@@ -45,8 +45,8 @@ Die `--people`-Option in `immich_ultra_sync.py` synchronisiert erkannte Personen
 
 - Das Asset Personendaten in Immich hat (nicht-leere Liste von Namen).
 - Die aktuellen Metadaten in der Datei von den gewünschten Werten aus Immich abweichen.
-- `--only-new` nicht verwendet wird (was Dateien überspringt, die bereits beliebige EXIF-Daten haben).
-- Nicht im Dry-Run-Modus.
+- `--only_new` nicht verwendet wird (was Dateien überspringt, die bereits beliebige EXIF-Daten haben).
+- Nicht im dry_run-Modus.
 Das Skript vergleicht aktuelle vs. gewünschte Werte, indem es vorhandene Metadaten aus der Datei mit ExifTool's JSON-Ausgabe liest, beide Seiten normalisiert und auf Unterschiede prüft. Wenn sie übereinstimmen, erfolgt kein Schreibvorgang.
 
 
